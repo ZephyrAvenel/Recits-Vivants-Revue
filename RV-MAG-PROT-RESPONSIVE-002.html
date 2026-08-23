@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#11171A">
+<title>Récits Vivants — Prototype N°01</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root{
+  --night:#11171A; --night2:#192124; --paper:#F3EFE4; --warm:#E9E1D1;
+  --ink:#292925; --muted:#625E55; --gold:#C8AC67; --gold2:#DEC476;
+  --line:rgba(80,70,55,.16); --ui:rgba(243,239,228,.76);
+  --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --sans:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --pad:clamp(22px,5vw,76px);
+  --measure:720px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--night)}
+body{margin:0;font-family:var(--serif);background:var(--night);color:var(--ink);overflow-x:hidden}
+button,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.skip{position:fixed;left:12px;top:-60px;z-index:100;background:#fff;color:#111;padding:10px 14px;font-family:var(--sans)}
+.skip:focus{top:12px}
+.reader-ui{position:fixed;inset:0 0 auto 0;z-index:50;pointer-events:none;transition:opacity .35s}
+.reader-ui.hidden{opacity:0}
+.topbar{height:58px;padding:0 max(18px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;font:500 11px/1 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--ui);mix-blend-mode:difference}
+.topbar button{pointer-events:auto;border:0;background:transparent;color:inherit;padding:12px;min-width:44px;min-height:44px}
+.page{min-height:100svh;position:relative;padding:clamp(82px,10vh,124px) var(--pad) clamp(86px,10vh,120px);display:flex;align-items:center}
+.page-inner{width:min(100%,1440px);margin:auto}
+.night{background:radial-gradient(circle at 50% 38%,#1c272a 0,var(--night) 55%);color:var(--paper)}
+.paper{background:linear-gradient(180deg,var(--paper),#efe9dc)}
+.warm{background:linear-gradient(180deg,var(--warm),#eee7d9)}
+.kicker{font:600 11px/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:28px}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(42px,7vw,82px);line-height:.93;font-weight:500;letter-spacing:-.035em}
+h2{font-size:clamp(32px,5vw,58px);line-height:1;font-weight:500;letter-spacing:-.025em}
+h3{font-size:clamp(22px,2.4vw,30px);font-weight:500}
+p{font-size:clamp(18px,1.5vw,21px);line-height:1.68}
+.seuil .page-inner{max-width:900px;text-align:center}
+.seuil .opening{font-size:clamp(24px,3vw,38px);line-height:1.5}
+.seuil .turn{margin:clamp(48px,9vh,100px) auto 0;max-width:760px;color:#ddd3bd}
+.seuil .question{margin-top:clamp(48px,8vh,88px);font-size:clamp(30px,5vw,58px);line-height:1.05;color:var(--gold2)}
+.thread{width:1px;height:clamp(70px,12vh,130px);margin:42px auto -70px;background:linear-gradient(var(--gold),transparent)}
+.essay-layout{display:grid;grid-template-columns:minmax(240px,.72fr) minmax(0,1fr);gap:clamp(48px,8vw,130px);align-items:start}
+.essay-title{position:sticky;top:100px}
+.prose{max-width:var(--measure)}
+.prose .lead{font-size:clamp(22px,2vw,27px);line-height:1.55}
+.prose .staccato{line-height:1.35;margin:32px 0}
+.prose h3{margin-top:48px;margin-bottom:12px}
+.prose blockquote{margin:44px 0;padding-left:22px;border-left:1px solid var(--gold);font-size:clamp(23px,2.2vw,30px);line-height:1.45}
+.map-title{max-width:850px;margin-bottom:55px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative}
+.node{border-top:1px solid var(--gold);padding:22px 14px 20px;min-height:160px;background:rgba(255,255,255,.17);transition:transform .2s,background .2s}
+.node:hover,.node:focus-within{transform:translateY(-3px);background:rgba(255,255,255,.38)}
+.node button{width:100%;text-align:left;border:0;background:none;padding:0;color:var(--ink)}
+.node strong{display:block;font:600 11px/1.3 var(--sans);letter-spacing:.15em;color:#806d3e;margin-bottom:12px}
+.node p{font-size:17px;line-height:1.5;margin:0}
+.loop{margin-top:30px;font:500 12px/1.5 var(--sans);letter-spacing:.08em;color:var(--muted)}
+.rep-grid{display:grid;grid-template-columns:1.05fr .95fr 1.1fr;gap:20px}
+.rep{padding:34px 28px 38px;border-top:1px solid var(--gold);background:rgba(255,255,255,.2)}
+.rep:nth-child(2){margin-top:42px}.rep:nth-child(3){margin-top:12px}
+.rep .symbol{font-size:24px;color:#8d7744}
+.rep h3{font-family:var(--sans);font-size:13px;letter-spacing:.16em;margin:20px 0;text-transform:uppercase}
+.rep p{font-size:18px}
+.lab-wrap{max-width:900px;margin:auto}
+.lab-intro{max-width:690px;margin-bottom:54px}
+.step{margin:42px 0}
+.step label{display:block;font:600 12px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+textarea{width:100%;min-height:140px;resize:vertical;border:0;border-bottom:1px solid rgba(80,70,55,.35);background:rgba(255,255,255,.18);padding:18px 8px;color:var(--ink);font-size:20px;line-height:1.55;border-radius:0;outline:none}
+textarea:focus-visible{border-bottom:2px solid var(--gold);background:rgba(255,255,255,.35)}
+.saved{height:20px;font:500 11px/1.4 var(--sans);letter-spacing:.08em;color:#76643b;opacity:0;transition:opacity .2s}
+.saved.show{opacity:1}
+.breath .page-inner{max-width:780px;text-align:center}
+.breath .symbol{color:var(--gold);font-size:32px;margin-bottom:60px}
+.breath p{font-size:clamp(25px,3vw,38px);line-height:1.55}
+.breath .final{margin-top:clamp(70px,12vh,130px);color:var(--gold2)}
+.bottomnav{position:fixed;z-index:55;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:rgba(17,23,26,.88);backdrop-filter:blur(12px);padding:5px;border:1px solid rgba(222,196,118,.22);border-radius:999px;transition:opacity .35s}
+.bottomnav.hidden{opacity:0;pointer-events:none}
+.bottomnav button{border:0;background:transparent;color:#f3efe4;min-width:44px;min-height:44px;border-radius:999px;font-family:var(--sans)}
+.bottomnav button:focus-visible,.topbar button:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.bottomnav .movement{padding:0 14px;min-width:150px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2)}
+.drawer{position:fixed;z-index:80;inset:0 0 0 auto;width:min(420px,92vw);padding:80px 30px 30px;background:#151d20;color:var(--paper);transform:translateX(105%);transition:transform .35s;box-shadow:-20px 0 60px rgba(0,0,0,.25)}
+.drawer.open{transform:none}
+.drawer h2{font-size:38px}.drawer button.close{position:absolute;right:20px;top:18px;border:0;background:none;color:var(--paper);font-size:28px;min-width:44px;min-height:44px}
+.drawer a{display:block;text-decoration:none;border-top:1px solid rgba(255,255,255,.12);padding:18px 0;font:500 13px/1.4 var(--sans);letter-spacing:.08em}
+.drawer a span{color:var(--gold);margin-right:10px}
+.backdrop{position:fixed;z-index:70;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s}
+.backdrop.show{opacity:1;pointer-events:auto}
+@media(max-width:900px){
+  .essay-layout{grid-template-columns:1fr;gap:26px}
+  .essay-title{position:static}
+  .essay-title h1{max-width:760px}
+  .flow{grid-template-columns:repeat(2,1fr)}
+  .rep-grid{grid-template-columns:1fr}
+  .rep:nth-child(2),.rep:nth-child(3){margin-top:0}
+}
+@media(max-width:600px){
+  :root{--pad:22px}
+  .page{align-items:flex-start;padding-top:88px}
+  .topbar{height:52px}
+  .seuil{align-items:center}
+  .seuil .opening{font-size:25px}
+  .flow{grid-template-columns:1fr;gap:0}
+  .node{min-height:auto;padding:22px 6px}
+  .node:not(:last-child)::after{content:"↓";display:block;color:var(--gold);margin:20px 0 -8px}
+  .bottomnav .movement{min-width:120px;padding:0 8px}
+  textarea{font-size:18px;min-height:130px}
+}
+@media(max-height:520px) and (orientation:landscape){
+  .page{padding-top:70px;padding-bottom:75px;min-height:100svh}
+  .seuil .page-inner{display:grid;grid-template-columns:1fr 1fr;gap:50px;text-align:left;align-items:center}
+  .seuil .question{margin-top:0}
+  .seuil .thread{display:none}
+  .flow{grid-template-columns:repeat(4,1fr)}
+  .node{min-height:135px}
+  .breath .page-inner{max-width:1000px}
+  .breath p{font-size:25px}
+}
+
+/* PROTO-RESPONSIVE-002 — structural responsive layer */
+:root{
+  --reader-header-h:58px;
+  --reader-nav-h:56px;
+  --reader-top-gap:24px;
+  --reader-bottom-gap:24px;
+  --vvh:100dvh;
+}
+.reader-shell{min-height:100%;position:relative;background:var(--night)}
+.reader-content{position:relative;z-index:1}
+.reader-ui{top:0;right:0;bottom:auto;left:0;padding-top:env(safe-area-inset-top);background:linear-gradient(180deg,rgba(17,23,26,.92),rgba(17,23,26,.72) 68%,transparent);color:var(--paper)}
+.reader-shell[data-theme="light"] .reader-ui{background:linear-gradient(180deg,rgba(243,239,228,.97),rgba(243,239,228,.82) 68%,transparent);color:var(--ink)}
+.reader-shell[data-theme="dark"] .reader-ui{background:linear-gradient(180deg,rgba(17,23,26,.96),rgba(17,23,26,.78) 68%,transparent);color:var(--paper)}
+.topbar{height:var(--reader-header-h);padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));color:inherit;mix-blend-mode:normal}
+.page{
+  min-height:100dvh;
+  height:auto;
+  padding-top:calc(env(safe-area-inset-top) + var(--reader-header-h) + var(--reader-top-gap));
+  padding-bottom:calc(env(safe-area-inset-bottom) + var(--reader-nav-h) + var(--reader-bottom-gap));
+  scroll-margin-top:calc(env(safe-area-inset-top) + var(--reader-header-h));
+  scroll-margin-bottom:calc(env(safe-area-inset-bottom) + var(--reader-nav-h));
+}
+@supports not (height:100dvh){.page{min-height:100svh}}
+.bottomnav{bottom:max(12px,env(safe-area-inset-bottom));min-height:var(--reader-nav-h)}
+.bottomnav button:disabled{opacity:.35;cursor:default}
+textarea{scroll-margin-top:calc(env(safe-area-inset-top) + var(--reader-header-h) + 18px);scroll-margin-bottom:calc(var(--reader-nav-h) + env(safe-area-inset-bottom) + 28px)}
+body.keyboard-open .bottomnav{opacity:0;pointer-events:none;transform:translate(-50%,16px)}
+body.keyboard-open .reader-ui{opacity:0;pointer-events:none}
+body.keyboard-open .page{padding-bottom:calc(env(safe-area-inset-bottom) + 28px)}
+body.menu-open{overflow:hidden}
+
+@media(max-width:600px){
+  :root{--reader-header-h:52px;--reader-nav-h:54px;--reader-top-gap:22px;--reader-bottom-gap:22px}
+  .page{padding-top:calc(env(safe-area-inset-top) + var(--reader-header-h) + var(--reader-top-gap));padding-bottom:calc(env(safe-area-inset-bottom) + var(--reader-nav-h) + var(--reader-bottom-gap))}
+}
+
+/* Low-height landscape is a composition mode, not a scaled portrait mode. */
+@media(orientation:landscape) and (max-height:600px){
+  :root{--reader-header-h:44px;--reader-nav-h:48px;--reader-top-gap:14px;--reader-bottom-gap:14px;--pad:clamp(24px,5vw,58px)}
+  .topbar{height:var(--reader-header-h);font-size:10px}
+  .topbar button{min-width:40px;min-height:40px;padding:8px}
+  .page{align-items:flex-start;min-height:100dvh;padding-top:calc(env(safe-area-inset-top) + var(--reader-header-h) + var(--reader-top-gap));padding-bottom:calc(env(safe-area-inset-bottom) + var(--reader-nav-h) + var(--reader-bottom-gap))}
+  h1{font-size:clamp(34px,7.5vh,58px);line-height:.96}
+  h2{font-size:clamp(28px,6.5vh,46px)}
+  p{font-size:clamp(16px,3.7vh,19px);line-height:1.55}
+  .kicker{margin-bottom:16px}
+  .seuil{align-items:center}
+  .seuil .page-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,70px);text-align:left;align-items:center}
+  .seuil .opening{font-size:clamp(20px,5vh,30px);line-height:1.35}
+  .seuil .turn{margin-top:22px}
+  .seuil .question{margin-top:0;font-size:clamp(28px,7vh,46px)}
+  .seuil .thread{display:none}
+  .essay-layout{grid-template-columns:minmax(190px,.62fr) minmax(0,1fr);gap:clamp(32px,6vw,80px)}
+  .essay-title{position:sticky;top:calc(env(safe-area-inset-top) + var(--reader-header-h) + 12px)}
+  .prose h3{margin-top:30px}.prose blockquote{margin:30px 0}
+  .map-title{margin-bottom:30px}.flow{grid-template-columns:repeat(4,1fr);gap:10px}.node{min-height:auto;padding:16px 10px}.node p{font-size:15px}.loop{margin-top:18px}
+  .rep-grid{grid-template-columns:repeat(3,1fr);gap:12px}.rep{padding:22px 18px}.rep:nth-child(2),.rep:nth-child(3){margin-top:0}.rep p{font-size:16px}
+  .lab-wrap{max-width:1100px}.lab-intro{margin-bottom:28px}.step{margin:26px 0}textarea{min-height:105px;font-size:17px}
+  .breath{align-items:center}.breath .page-inner{max-width:1100px}.breath .symbol{margin-bottom:24px}.breath p{font-size:clamp(20px,5vh,28px);line-height:1.35}.breath .final{margin-top:34px}
+  .bottomnav{padding:3px}.bottomnav button{min-height:40px}.bottomnav .movement{min-width:128px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#p02">Aller au contenu</a>
+
+<div class="reader-shell" id="readerShell" data-theme="dark">
+<div class="reader-ui" id="readerUI" aria-hidden="true">
+  <div class="topbar">
+    <span>Récits Vivants · N°01</span>
+    <span><span id="pageLabel">02</span> / 28 <button id="menuBtn" aria-label="Ouvrir le sommaire" aria-expanded="false">☰</button></span>
+  </div>
+</div>
+
+<main class="reader-content" id="readerContent">
+<section class="page night seuil" id="p02" data-theme="dark" data-page="02" data-movement="Le Seuil">
+  <div class="page-inner">
+    <div>
+      <div class="kicker">Le seuil</div>
+      <p class="opening">Nous vivons entourés de récits.<br>Certains nous aident à comprendre.<br>Certains nous permettent de tenir.<br>Certains nous relient.</p>
+      <p class="turn">Et parfois, presque imperceptiblement, une histoire qui nous aidait à nous orienter commence à ne plus suffire.</p>
+    </div>
+    <div>
+      <p class="question">Comment reconnaître ce moment&nbsp;?</p>
+      <div class="thread" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<section class="page paper" id="p06" data-theme="light" data-page="06" data-movement="◌ Percevoir">
+  <div class="page-inner essay-layout">
+    <header class="essay-title">
+      <div class="kicker">◌ 01 · Percevoir</div>
+      <h1>À l'écoute<br>des signaux<br>vivants</h1>
+    </header>
+    <article class="prose">
+      <p class="lead">Il existe des changements qui n'arrivent pas avec fracas.</p>
+      <p class="staccato">Aucune rupture.<br>Aucune révélation.<br>Aucun événement suffisamment spectaculaire pour pouvoir dire : <em>c'est ici que tout a changé.</em></p>
+      <p>Quelque chose se déplace pourtant. Une activité qui nous enthousiasmait nous laisse légèrement plus indifférent. Une manière de travailler devient étrangement lourde. Une relation familière produit une sensation nouvelle. Une idée que nous répétions avec conviction ne sonne plus exactement de la même manière.</p>
+      <p>Ces variations sont faciles à recouvrir. Nous expliquons. Nous rationalisons. Nous continuons. Nous faisons entrer ce qui arrive dans les catégories que nous possédons déjà.</p>
+      <p>Mais il arrive que notre manière habituelle de comprendre l'expérience ne suffise plus tout à fait.</p>
+      <h3>Ce qui ne parle pas encore</h3>
+      <p>Quelque chose peut d'abord apparaître comme une gêne, une curiosité, une fatigue inhabituelle, une joie difficile à expliquer, une image qui revient, une question que l'on croyait réglée.</p>
+      <p>Écouter demande parfois d'accepter momentanément de ne pas savoir. Ce n'est pas renoncer à comprendre. C'est différer légèrement la conclusion afin que ce qui apparaît ait le temps de montrer sa forme.</p>
+      <h3>L'attention n'est pas la surveillance</h3>
+      <p>Être attentif ne signifie pas analyser continuellement chacune de nos sensations. Il s'agit plutôt de préserver une disponibilité : remarquer qu'une chose insiste, qu'une autre s'éteint, ou qu'une possibilité auparavant invisible commence à attirer notre attention.</p>
+      <blockquote>Ce que je vis ne correspond plus exactement à la manière dont je le comprenais.</blockquote>
+      <p>Aucune conclusion n'est encore nécessaire. Quelque chose vient seulement de gagner le droit d'être regardé.</p>
+    </article>
+  </div>
+</section>
+
+<section class="page warm" id="p09" data-theme="light" data-page="09" data-movement="◎ Comprendre">
+  <div class="page-inner">
+    <header class="map-title">
+      <div class="kicker">◎ 02 · Comprendre</div>
+      <h1>Comment naissent les mondes que nous habitons&nbsp;?</h1>
+      <p>Quelque chose arrive. Nous le percevons, nous nous en souvenons, nous lui donnons une forme. Cette forme peut ensuite être partagée.</p>
+    </header>
+    <div class="flow" aria-label="Boucle de formation des récits">
+      <div class="node"><button><strong>EXPÉRIENCE</strong><p>Quelque chose arrive. Aucune description n'en épuise toutes les dimensions.</p></button></div>
+      <div class="node"><button><strong>MÉMOIRE</strong><p>Certains éléments demeurent, d'autres disparaissent ou se recomposent.</p></button></div>
+      <div class="node"><button><strong>RÉCIT</strong><p>Nous relions des événements, des causes, des commencements et des conséquences.</p></button></div>
+      <div class="node"><button><strong>TRANSMISSION</strong><p>L'histoire est répétée, déplacée, simplifiée, contestée.</p></button></div>
+      <div class="node"><button><strong>CULTURE</strong><p>Des représentations deviennent familières et fournissent modèles et attentes.</p></button></div>
+      <div class="node"><button><strong>COSMOLOGIE</strong><p>Des ensembles de représentations participent à définir ce qui paraît possible.</p></button></div>
+      <div class="node"><button><strong>MONDE HABITÉ</strong><p>Nous agissons à partir de ces significations et produisons de nouvelles expériences.</p></button></div>
+      <div class="node"><button><strong>↻ RETOUR</strong><p>La boucle recommence : l'expérience peut confirmer, déplacer ou contredire nos cadres.</p></button></div>
+    </div>
+    <p class="loop">EXPÉRIENCE → MÉMOIRE → RÉCIT → TRANSMISSION → CULTURE → COSMOLOGIE → MONDE HABITÉ → EXPÉRIENCE…</p>
+  </div>
+</section>
+
+<section class="page paper" id="p11" data-theme="light" data-page="11" data-movement="◎ Comprendre">
+  <div class="page-inner">
+    <div class="kicker">Repères</div>
+    <h1 style="max-width:950px">Recherche · Pensée · Exploration</h1>
+    <p style="max-width:680px;margin-bottom:52px">Les distinguer ne les sépare pas. Cela permet de savoir depuis quel endroit nous parlons.</p>
+    <div class="rep-grid">
+      <article class="rep"><div class="symbol">○</div><h3>Recherche</h3><p>Ce que les travaux scientifiques permettent d'étudier ou d'étayer, dans les limites de leurs méthodes et de leurs populations.</p></article>
+      <article class="rep"><div class="symbol">◇</div><h3>Pensée</h3><p>Ce que Ricœur, Korzybski, Bakhtine, Bateson et d'autres traditions nous donnent à penser. Des interlocuteurs, non des validations scientifiques.</p></article>
+      <article class="rep"><div class="symbol">✦</div><h3>Exploration</h3><p>Ce que la revue propose : récit respirable, habitabilité, fermeture, transformabilité et écologie narrative.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="page warm" id="p22" data-theme="light" data-page="22" data-movement="↔ Rencontrer">
+  <div class="page-inner lab-wrap">
+    <div class="kicker">↔ Laboratoire dialogique</div>
+    <h1>Changer de place<br>sans changer de camp</h1>
+    <p class="lab-intro">Choisissez un désaccord réel. Pas nécessairement le plus douloureux. Vos réponses restent enregistrées uniquement dans ce navigateur.</p>
+    <div class="step">
+      <label for="a1">01 — Mon récit</label>
+      <textarea id="a1" data-key="mon-recit" placeholder="Comment raconterais-je spontanément cette situation ?"></textarea>
+    </div>
+    <div class="step">
+      <label for="a2">02 — Le récit de l'autre</label>
+      <textarea id="a2" data-key="recit-autre" placeholder="Comment est-ce que je raconte habituellement sa position ?"></textarea>
+    </div>
+    <div class="step">
+      <label for="a3">03 — Sans disqualification</label>
+      <textarea id="a3" data-key="sans-disqualification" placeholder="Présentez sa position d'une manière qu'elle pourrait elle-même reconnaître."></textarea>
+    </div>
+    <div class="saved" id="saved" role="status" aria-live="polite">Enregistré sur cet appareil</div>
+    <blockquote style="font-size:clamp(23px,2.4vw,31px);line-height:1.45;margin:50px 0 0">Qu'est-ce qui change lorsque je n'ai plus besoin de caricaturer l'autre pour maintenir mon désaccord&nbsp;?</blockquote>
+  </div>
+</section>
+
+<section class="page night breath" id="p19" data-theme="dark" data-page="19" data-movement="↔ Rencontrer">
+  <div class="page-inner">
+    <div class="symbol" aria-hidden="true">↔</div>
+    <p>Je peux entendre votre récit<br>sans l'adopter.</p>
+    <p>Je peux comprendre ce qui vous conduit à une position<br>sans considérer cette position comme juste.</p>
+    <p>Je peux maintenir mon désaccord<br>sans vous réduire à ce désaccord.</p>
+    <p class="final">Nous n'avons peut-être pas besoin<br>d'habiter exactement la même histoire<br><br>pour chercher ensemble<br><strong>ce qui permet encore un monde commun.</strong></p>
+  </div>
+</section>
+</main>
+
+<nav class="bottomnav" id="bottomnav" aria-label="Navigation du prototype">
+  <button id="prev" aria-label="Page précédente">←</button>
+  <button class="movement" id="movement" aria-label="Mouvement actuel">Le Seuil</button>
+  <button id="next" aria-label="Page suivante">→</button>
+</nav>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-label="Sommaire du prototype" aria-hidden="true">
+  <button class="close" id="closeMenu" aria-label="Fermer">×</button>
+  <div class="kicker">Prototype vertical · 6 familles</div>
+  <h2>Rouvrir le possible</h2>
+  <a href="#p02"><span>02</span> Seuil</a>
+  <a href="#p06"><span>06</span> Essai — Percevoir</a>
+  <a href="#p09"><span>09</span> Carte — Comprendre</a>
+  <a href="#p11"><span>11</span> Repères</a>
+  <a href="#p22"><span>22</span> Laboratoire</a>
+  <a href="#p19"><span>19</span> Respiration</a>
+</aside>
+</div>
+
+<script>
+(() => {
+  const sections=[...document.querySelectorAll('.page')];
+  const pageLabel=document.getElementById('pageLabel');
+  const movement=document.getElementById('movement');
+  const prev=document.getElementById('prev'), next=document.getElementById('next');
+  const ui=document.getElementById('readerUI'), nav=document.getElementById('bottomnav');
+  const shell=document.getElementById('readerShell');
+  let current=0, hideTimer, restoreDone=false;
+
+  function setCurrent(i){
+    current=Math.max(0,Math.min(sections.length-1,i));
+    const s=sections[current];
+    pageLabel.textContent=s.dataset.page;
+    movement.textContent=s.dataset.movement;
+    prev.disabled=current===0; next.disabled=current===sections.length-1;
+    shell.dataset.theme=s.dataset.theme||'light';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content',shell.dataset.theme==='dark'?'#11171A':'#F3EFE4');
+    try{localStorage.setItem('rv:magazine:n01:prototype:reader',JSON.stringify({page:s.dataset.page,scrollY:Math.round(scrollY)}));}catch(e){}
+  }
+  const observer=new IntersectionObserver(entries=>{
+    const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+    if(visible) setCurrent(sections.indexOf(visible.target));
+  },{threshold:[.35,.55,.75]});
+  sections.forEach(s=>observer.observe(s));
+
+  function go(delta){ sections[Math.max(0,Math.min(sections.length-1,current+delta))].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); }
+  prev.onclick=()=>go(-1); next.onclick=()=>go(1);
+  document.addEventListener('keydown',e=>{
+    if(document.activeElement.tagName==='TEXTAREA') return;
+    if(e.key==='ArrowRight'||e.key==='PageDown') go(1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp') go(-1);
+  });
+
+  function wake(){
+    ui.classList.remove('hidden'); nav.classList.remove('hidden');
+    clearTimeout(hideTimer);
+    hideTimer=setTimeout(()=>{ui.classList.add('hidden');nav.classList.add('hidden')},4500);
+  }
+  ['pointermove','pointerdown','keydown','scroll'].forEach(ev=>addEventListener(ev,wake,{passive:true}));
+  wake();
+
+  const drawer=document.getElementById('drawer'), backdrop=document.getElementById('backdrop'), menuBtn=document.getElementById('menuBtn');
+  function menu(open){
+    drawer.classList.toggle('open',open); backdrop.classList.toggle('show',open); document.body.classList.toggle('menu-open',open);
+    drawer.setAttribute('aria-hidden',String(!open)); menuBtn.setAttribute('aria-expanded',String(open));
+    if(open) document.getElementById('closeMenu').focus();
+  }
+  menuBtn.onclick=()=>menu(true);
+  document.getElementById('closeMenu').onclick=()=>menu(false);
+  backdrop.onclick=()=>menu(false);
+  drawer.querySelectorAll('a').forEach(a=>a.onclick=()=>menu(false));
+
+
+
+  // Dynamic viewport + virtual keyboard protection.
+  const vv=window.visualViewport;
+  function syncViewport(){
+    const h=vv?vv.height:window.innerHeight;
+    document.documentElement.style.setProperty('--vvh',h+'px');
+    const keyboardOpen=vv && (window.innerHeight-vv.height)>150;
+    document.body.classList.toggle('keyboard-open',!!keyboardOpen);
+    if(keyboardOpen && document.activeElement && document.activeElement.matches('textarea,input,select')){
+      requestAnimationFrame(()=>document.activeElement.scrollIntoView({block:'center',behavior:'smooth'}));
+    }
+  }
+  if(vv){vv.addEventListener('resize',syncViewport);vv.addEventListener('scroll',syncViewport)}
+  addEventListener('resize',syncViewport,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(syncViewport,180),{passive:true});
+  syncViewport();
+
+  document.addEventListener('focusin',e=>{
+    if(e.target.matches('textarea,input,select')) setTimeout(()=>e.target.scrollIntoView({block:'center',behavior:'smooth'}),220);
+  });
+
+  // Persist reading position separately from journal answers.
+  let readerState={};
+  try{readerState=JSON.parse(localStorage.getItem('rv:magazine:n01:prototype:reader')||'{}')}catch(e){}
+  let positionTimer;
+  addEventListener('scroll',()=>{
+    clearTimeout(positionTimer);
+    positionTimer=setTimeout(()=>{
+      const s=sections[current];
+      try{localStorage.setItem('rv:magazine:n01:prototype:reader',JSON.stringify({page:s.dataset.page,scrollY:Math.round(scrollY)}));}catch(e){}
+    },120);
+  },{passive:true});
+  addEventListener('pagehide',()=>{
+    const s=sections[current];
+    try{localStorage.setItem('rv:magazine:n01:prototype:reader',JSON.stringify({page:s.dataset.page,scrollY:Math.round(scrollY)}));}catch(e){}
+  });
+
+  const storageKey='rv:magazine:n01:prototype:journal';
+  let data={};
+  try{ data=JSON.parse(localStorage.getItem(storageKey)||'{}'); }catch(e){}
+  const saved=document.getElementById('saved');
+  let saveTimer;
+  document.querySelectorAll('textarea[data-key]').forEach(t=>{
+    t.value=data[t.dataset.key]||'';
+    t.addEventListener('input',()=>{
+      data[t.dataset.key]=t.value;
+      try{localStorage.setItem(storageKey,JSON.stringify(data));}catch(e){}
+      saved.classList.add('show');
+      clearTimeout(saveTimer); saveTimer=setTimeout(()=>saved.classList.remove('show'),1600);
+    });
+  });
+  const restoredIndex=readerState.page?sections.findIndex(s=>s.dataset.page===readerState.page):0;
+  setCurrent(restoredIndex>=0?restoredIndex:0);
+  requestAnimationFrame(()=>{
+    if(Number.isFinite(readerState.scrollY)){scrollTo(0,readerState.scrollY)}
+    else if(restoredIndex>0){sections[restoredIndex].scrollIntoView({block:'start'})}
+    restoreDone=true;
+  });
+})();
+</script>
+</body>
+</html>
