@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#03060d">
+<title>LE CHAMP — MASTER FILM 001</title>
+<style>
+:root{--bg:#03060d;--ink:#efe4cf;--muted:#8f897e;--gold:#e5c977;--violet:#8f78ff;--blue:#74d9ff}
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:var(--ink)}
+body{font-family:Georgia,"Times New Roman",serif}
+#film{position:fixed;inset:0;background:#02040a;overflow:hidden;isolation:isolate}
+canvas{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 46%,transparent 25%,rgba(0,0,0,.12) 62%,rgba(0,0,0,.68) 100%);z-index:2}
+.grain{position:absolute;inset:-30%;z-index:3;pointer-events:none;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");animation:grain .32s steps(2) infinite}
+@keyframes grain{0%{transform:translate(0)}25%{transform:translate(3%,-2%)}50%{transform:translate(-2%,3%)}75%{transform:translate(1%,2%)}100%{transform:translate(-3%,-1%)}}
+.top{position:absolute;z-index:6;left:0;right:0;top:0;padding:max(28px,env(safe-area-inset-top)) 5.5vw 0;display:flex;justify-content:space-between;gap:16px;font:700 11px/1.3 Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#a49c8f}
+#stage{color:#b69b5b;text-align:right}.center{position:absolute;z-index:7;left:7vw;right:7vw;top:50%;transform:translateY(-50%);text-align:center;pointer-events:none}
+.kicker{font:700 10px Arial,sans-serif;letter-spacing:.25em;text-transform:uppercase;color:#b59a59;margin-bottom:18px;opacity:0;transform:translateY(8px);transition:1.2s}
+h1{font-weight:400;font-size:clamp(38px,9vw,64px);line-height:1.04;margin:0;opacity:0;transform:translateY(12px);transition:1.4s}
+.subtitle{max-width:720px;margin:20px auto 0;font-size:clamp(17px,4.5vw,27px);line-height:1.5;color:#bcb2a2;opacity:0;transform:translateY(10px);transition:1.4s}
+.show{opacity:1!important;transform:translateY(0)!important}.bottom{position:absolute;z-index:6;left:6vw;right:6vw;bottom:max(26px,env(safe-area-inset-bottom));text-align:center;font:700 9px Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(164,156,143,.38)}
+#progress{position:absolute;z-index:8;left:6vw;right:6vw;bottom:max(10px,env(safe-area-inset-bottom));height:1px;background:rgba(229,201,119,.12)}#bar{height:100%;width:0;background:rgba(229,201,119,.65)}
+#curtain{position:absolute;inset:0;z-index:10;background:#02040a;opacity:1;pointer-events:none;transition:1.5s opacity}.endmark{font:700 10px Arial,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:#b59a59;margin-top:28px;opacity:0;transition:1.4s}
+@media(min-aspect-ratio:9/16){#film{width:min(100vw,56.25vh);height:min(177.777vw,100vh);left:50%;top:50%;transform:translate(-50%,-50%)}}
+</style>
+</head>
+<body>
+<div id="film">
+<canvas id="c"></canvas><div class="vignette"></div><div class="grain"></div>
+<div class="top"><div>RÉCITS VIVANTS · MASTER FILM 001</div><div id="stage">00 · LE CHAMP</div></div>
+<div class="center"><div class="kicker" id="kicker"></div><h1 id="title"></h1><div class="subtitle" id="subtitle"></div><div class="endmark" id="endmark">CE QUI DEMEURE</div></div>
+<div class="bottom" id="bottom">UNE TRANSMUTATION CINÉMATOGRAPHIQUE DU CHAMP</div><div id="progress"><div id="bar"></div></div><div id="curtain"></div>
+</div>
+<script>
+(()=>{
+const DURATION=105000; // ~1 min 45
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const stage=document.getElementById('stage'),title=document.getElementById('title'),subtitle=document.getElementById('subtitle'),kicker=document.getElementById('kicker'),endmark=document.getElementById('endmark'),bar=document.getElementById('bar'),curtain=document.getElementById('curtain');
+let W,H,dpr,t0=null,last=0,nodes=[],links=[],ghosts=[],seed=19,scene=-1;
+const P={gold:[229,201,119],violet:[143,120,255],blue:[116,217,255]};
+const masters=[
+ {s:0,e:9000,label:'00 · LE CHAMP',k:'ŒUVRE EXPÉRIMENTALE',t:'Le Champ',sub:'Tout ne demande pas à être rapproché.'},
+ {s:9000,e:21000,label:'01 · DISTANCE',k:'MASTER 01',t:'La distance',sub:'Certaines présences demandent que leur distance soit respectée.'},
+ {s:21000,e:33000,label:'02 · AFFINITÉ',k:'MASTER 02',t:'Les affinités invisibles',sub:'La proximité ne suffit pas à produire une rencontre.'},
+ {s:33000,e:45000,label:'03 · SOIN',k:'MASTER 03',t:'Les liens fragiles',sub:'Certains liens ne durent que si l’on cesse de les forcer.'},
+ {s:45000,e:57000,label:'04 · LE TIERS',k:'MASTER 04',t:'Le passage',sub:'Entre deux présences, parfois, un tiers rend la relation possible.'},
+ {s:57000,e:71000,label:'05 · MÉTAMORPHOSE',k:'MASTER 05',t:'La métamorphose',sub:'Ce qui entre en relation n’en ressort pas toujours identique.'},
+ {s:71000,e:83000,label:'06 · ABSENCE',k:'MASTER 06',t:'L’absence',sub:'Ce qui n’est plus là peut continuer d’organiser le champ.'},
+ {s:83000,e:96000,label:'07 · MONDE COMMUN',k:'MASTER 07',t:'Habiter sans centre',sub:'Coexister ne demande pas de devenir semblables.'},
+ {s:96000,e:105000,label:'08 · CONSTELLATION',k:'MASTER 08',t:'Voici ce qui demeure.',sub:'Ni solution, ni verdict. Seulement l’état présent du champ.'}
+];
+function rnd(){seed=(seed*16807)%2147483647;return(seed-1)/2147483646} function R(a,b){return a+rnd()*(b-a)}
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);init()} addEventListener('resize',resize);
+function node(i,type){return{x:R(W*.1,W*.9),y:R(H*.19,H*.78),tx:R(W*.15,W*.85),ty:R(H*.23,H*.73),vx:R(-.06,.06),vy:R(-.06,.06),type:type||(['gold','gold','gold','violet','blue'][i%5]),r:type==='blue'?5:3.5,id:i,heat:0,alive:true}}
+function init(){seed=19;nodes=[];links=[];ghosts=[];for(let i=0;i<18;i++)nodes.push(node(i));}
+function link(a,b,type='soft',life=1){if(!a||!b||a===b)return;let q=links.find(l=>(l.a===a&&l.b===b)||(l.a===b&&l.b===a));if(q){q.life=Math.max(q.life,life);return}links.push({a,b,type,life,born:last})}
+function enterScene(i){scene=i;stage.textContent=masters[i].label;kicker.textContent=masters[i].k;title.textContent=masters[i].t;subtitle.textContent=masters[i].sub;[kicker,title,subtitle,endmark].forEach(x=>x.classList.remove('show'));setTimeout(()=>kicker.classList.add('show'),250);setTimeout(()=>title.classList.add('show'),650);setTimeout(()=>subtitle.classList.add('show'),1150);if(i===8)setTimeout(()=>endmark.classList.add('show'),3500);if(i>0)setTimeout(()=>{kicker.classList.remove('show');title.classList.remove('show');subtitle.classList.remove('show')},5000);}
+function nearest(n,filter=()=>true){return nodes.filter(q=>q!==n&&q.alive&&filter(q)).sort((a,b)=>Math.hypot(a.x-n.x,a.y-n.y)-Math.hypot(b.x-n.x,b.y-n.y))[0]}
+function update(ms,dt){let m=masters[scene],p=(ms-m.s)/(m.e-m.s);nodes.forEach((n,i)=>{if(!n.alive)return;n.x+=n.vx*dt*.06;n.y+=n.vy*dt*.06;if(n.x<30||n.x>W-30)n.vx*=-1;if(n.y<H*.17||n.y>H*.81)n.vy*=-1;});
+ if(scene===0){ if(ms>3000&&links.length<3)link(nodes[0],nodes[2]); }
+ if(scene===1){nodes.forEach((n,i)=>{let cx=W*.5,cy=H*.49,d=Math.hypot(n.x-cx,n.y-cy);if(n.type==='gold'&&d<220){n.x+=(cx-n.x)*.0004*dt;n.y+=(cy-n.y)*.0004*dt}if(n.type==='violet'&&d<145){n.x+=(n.x-cx)*.00065*dt;n.y+=(n.y-cy)*.00065*dt}});if(p>.55&&links.length<5)link(nodes[0],nodes[1]);}
+ if(scene===2){if(Math.floor(ms/1100)!==Math.floor((ms-dt)/1100)){let a=nodes[Math.floor(R(0,12))],b=nearest(a,q=>q.type===a.type);link(a,b,'affinity',1)}}
+ if(scene===3){if(Math.floor(ms/1400)!==Math.floor((ms-dt)/1400)){let a=nodes[Math.floor(R(0,13))],b=nearest(a);link(a,b,'fragile',1)}links.forEach((l,i)=>{if(l.type==='fragile')l.life-=dt*(i%3===0?.00011:.000035)})}
+ if(scene===4){let blue=nodes.find(n=>n.type==='blue');let gold=nodes.filter(n=>n.type==='gold');blue.x+=(W*.5-blue.x)*.00045*dt;blue.y+=(H*.5-blue.y)*.00045*dt;if(p>.28){link(gold[0],blue,'bridge');link(blue,gold[4], 'bridge')}}
+ if(scene===5){if(Math.floor(ms/1800)!==Math.floor((ms-dt)/1800)){let n=nodes[Math.floor(R(0,12))];let q=nearest(n);link(n,q,'change');n.type=n.type==='gold'?'violet':n.type==='violet'?'blue':'gold'}nodes.forEach((n,i)=>{let ang=i*.8+p*1.8,rad=(80+i*8)*(1+p*.7);n.x+=(W*.5+Math.cos(ang)*rad-n.x)*.00016*dt;n.y+=(H*.5+Math.sin(ang)*rad*.9-n.y)*.00016*dt})}
+ if(scene===6&&p>.34&&ghosts.length<2){let n=nodes[2+ghosts.length*4];if(n.alive){n.alive=false;ghosts.push({x:n.x,y:n.y,r:10,life:1});links=links.filter(l=>l.a!==n&&l.b!==n)}}
+ if(scene===7){if(Math.floor(ms/650)!==Math.floor((ms-dt)/650)){let a=nodes[Math.floor(R(0,nodes.length))];if(a.alive)link(a,nearest(a),'plural',1)}nodes.forEach((n,i)=>{let ang=i/nodes.length*Math.PI*2+p*.25,rad=Math.min(W,H)*(.2+.22*(i%4)/4);n.x+=(W*.5+Math.cos(ang)*rad-n.x)*.00012*dt;n.y+=(H*.49+Math.sin(ang)*rad*1.55-n.y)*.00012*dt})}
+ if(scene===8){if(Math.floor(ms/450)!==Math.floor((ms-dt)/450)){let alive=nodes.filter(n=>n.alive),a=alive[Math.floor(R(0,alive.length))],b=alive[Math.floor(R(0,alive.length))];link(a,b,'plural',.8)}}
+ links.forEach(l=>{if(l.type!=='fragile')l.life-=dt*.000003});links=links.filter(l=>l.life>.025&&l.a.alive&&l.b.alive);ghosts.forEach(g=>{g.r+=dt*.006;g.life*=Math.pow(.9997,dt/16)});
+}
+function draw(ms){ctx.clearRect(0,0,W,H);let z=1,ox=0,oy=0;if(scene===5){let p=(ms-masters[5].s)/(masters[5].e-masters[5].s);z=1+.34*Math.sin(p*Math.PI);oy=-H*.035*Math.sin(p*Math.PI)}else if(scene===7){let p=(ms-masters[7].s)/(masters[7].e-masters[7].s);z=1-.12*p}else if(scene===8){let p=(ms-masters[8].s)/(masters[8].e-masters[8].s);z=.88-.12*p}ctx.save();ctx.translate(W/2,H/2);ctx.scale(z,z);ctx.translate(-W/2+ox,-H/2+oy);
+ let g=ctx.createRadialGradient(W*.5,H*.47,0,W*.5,H*.47,Math.max(W,H)*.7);g.addColorStop(0,'rgba(12,24,43,.30)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ links.forEach(l=>{let col=l.type==='bridge'?'116,217,255':l.type==='affinity'?'229,201,119':l.type==='plural'?'170,155,220':l.type==='change'?'195,160,215':'125,190,220';ctx.strokeStyle=`rgba(${col},${.09+.34*l.life})`;ctx.lineWidth=l.type==='bridge'?1.8:1.05;ctx.beginPath();ctx.moveTo(l.a.x,l.a.y);let mx=(l.a.x+l.b.x)/2,my=(l.a.y+l.b.y)/2-10*Math.sin(ms*.001+l.a.id);ctx.quadraticCurveTo(mx,my,l.b.x,l.b.y);ctx.stroke()});
+ ghosts.forEach(a=>{ctx.strokeStyle=`rgba(229,201,119,${a.life*.22})`;ctx.lineWidth=.8;ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);ctx.stroke()});
+ nodes.forEach(n=>{if(!n.alive)return;let p=P[n.type],pulse=1+Math.sin(ms*.002+n.id)*.13,rr=n.type==='gold'?30:26;let glow=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,rr);glow.addColorStop(0,`rgba(${p},.85)`);glow.addColorStop(.17,`rgba(${p},.27)`);glow.addColorStop(1,`rgba(${p},0)`);ctx.fillStyle=glow;ctx.beginPath();ctx.arc(n.x,n.y,rr*pulse,0,Math.PI*2);ctx.fill();ctx.fillStyle=`rgb(${p})`;ctx.beginPath();ctx.arc(n.x,n.y,n.type==='blue'?5:3.5,0,Math.PI*2);ctx.fill();if(n.type==='blue'){ctx.strokeStyle=`rgba(${p},.35)`;ctx.beginPath();ctx.arc(n.x,n.y,10,0,Math.PI*2);ctx.stroke()}});ctx.restore();}
+function loop(ts){if(t0===null){t0=ts;last=0;setTimeout(()=>curtain.style.opacity=0,200)}let ms=ts-t0;if(ms>DURATION){curtain.style.opacity=1;setTimeout(()=>location.reload(),1800);return}let dt=Math.min(40,ms-last||16);last=ms;let i=masters.findIndex(x=>ms>=x.s&&ms<x.e);if(i!==scene)enterScene(i);update(ms,dt);draw(ms);bar.style.width=(ms/DURATION*100)+'%';requestAnimationFrame(loop)}
+resize();requestAnimationFrame(loop);
+})();
+</script>
+</body></html>
