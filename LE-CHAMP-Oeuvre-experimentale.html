@@ -55,7 +55,7 @@ p{font-size:clamp(18px,4.4vw,27px);line-height:1.55;color:#bbb1a1;margin:0 auto 
 
 <div class="overlay" id="intro">
  <div class="panel">
-  <div class="kicker">ŒUVRE EXPÉRIMENTALE · PROTOTYPE 004</div>
+  <div class="kicker">ŒUVRE EXPÉRIMENTALE · PROTOTYPE 007</div>
   <h1>Le Champ</h1>
   <p>Sept expériences pour éprouver ce que relier peut vouloir dire — accueillir, résister, passer, prendre soin, se transformer, manquer, coexister.</p>
   <button class="action" id="enter">Entrer dans le champ</button>
@@ -83,6 +83,7 @@ const contemplate=document.getElementById('contemplate'), map=document.getElemen
 const trace=document.getElementById('trace'), grid=document.getElementById('mapGrid'), cont=document.getElementById('continue');
 
 let W,H,dpr, pointer={x:0,y:0,active:false}, t=0, exp=0, interactions=0, lastMessage=0, completed=[];
+let scale=1;
 let nodes=[], links=[], absences=[];
 const experiences=[
  {name:"I · DISTANCE", title:"La distance", line:"Certaines présences demandent que leur distance soit respectée."},
@@ -95,14 +96,25 @@ const experiences=[
 ];
 const palette={gold:[229,201,119],violet:[143,120,255],blue:[116,217,255]};
 
-function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+/*
+ PROTOTYPE 006 — progression sémantique
+ Une expérience se termine lorsqu'elle a produit assez de transformations
+ significatives dans le champ. Le seuil n'est plus artificiellement identique
+ pour les sept grammaires relationnelles.
+*/
+const completionTargets=[6,6,6,4,6,6,7];
+function checkCompletion(){
+ if(interactions>=completionTargets[exp])contemplate.style.display="block";
+}
+
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;scale=Math.max(1,Math.min(2.15,Math.sqrt((W*H)/(390*844))));canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
 addEventListener('resize',resize);resize();
 
 function rand(a,b){return a+Math.random()*(b-a)}
 function makeNode(i){
  let types= exp===6?["gold","violet","blue"][i%3] : (i%5===3?"violet":i%5===4?"blue":"gold");
  return {x:rand(W*.12,W*.88),y:rand(H*.23,H*.72),vx:rand(-.08,.08),vy:rand(-.08,.08),type:types,r:types==="blue"?6:4,
- affinity:Math.floor(Math.random()*3),age:0,heat:0,alive:true,id:i}
+ affinity:exp===1?(i%3):Math.floor(Math.random()*3),age:0,heat:0,alive:true,id:i}
 }
 function reset(){
  nodes=[];links=[];absences=[];interactions=0;contemplate.style.display="none";
@@ -120,28 +132,32 @@ function addLink(a,b,type="soft"){
  links.push({a,b,type,life:1,born:t});
  interactions++;
  if(interactions===4)show(experiences[exp].line);
- if(interactions>=9)contemplate.style.display="block";
+ checkCompletion();
 }
 function react(n){
  if(!n.alive)return;
  let d=Math.hypot(pointer.x-n.x,pointer.y-n.y), dx=n.x-pointer.x,dy=n.y-pointer.y;
- if(d>145)return;
+ if(d>145*scale)return;
  if(exp===0){ // distance
    if(n.type==="gold"){n.x+=(pointer.x-n.x)*.012;n.y+=(pointer.y-n.y)*.012}
-   if(n.type==="violet"&&d<95){n.x+=dx*.035;n.y+=dy*.035}
+   if(n.type==="violet"&&d<95*scale){n.x+=dx*.035;n.y+=dy*.035}
  } else if(exp===1){ // affinity
-   if(d<75){let peers=nodes.filter(q=>q!==n&&q.affinity===n.affinity&&dist(q,n)<230);if(peers[0])addLink(n,peers[0],"affinity")}
+   if(d<75*scale){
+     let peers=nodes.filter(q=>q!==n&&q.alive&&q.affinity===n.affinity&&dist(q,n)<230*scale)
+                    .sort((a,b)=>dist(a,n)-dist(b,n));
+     if(peers[0])addLink(n,peers[0],"affinity");
+   }
  } else if(exp===2){ // care
-   if(d<90){n.heat+=.03;if(n.heat<1.2){let q=nearest(n);if(q)addLink(n,q,"fragile")}else{links.forEach(l=>{if(l.a===n||l.b===n)l.life-=.025})}}
+   if(d<90*scale){n.heat+=.03;if(n.heat<1.2){let q=nearest(n);if(q)addLink(n,q,"fragile")}else{links.forEach(l=>{if(l.a===n||l.b===n)l.life-=.025})}}
  } else if(exp===3){ // third
-   if(n.type==="blue"&&d<100){let others=nodes.filter(q=>q!==n&&q.type!=="blue").sort((a,b)=>dist(a,n)-dist(b,n));if(others.length>1){addLink(others[0],n,"bridge");addLink(n,others[1],"bridge")}}
+   if(n.type==="blue"&&d<100*scale){let others=nodes.filter(q=>q!==n&&q.type!=="blue").sort((a,b)=>dist(a,n)-dist(b,n));if(others.length>1){addLink(others[0],n,"bridge");addLink(n,others[1],"bridge")}}
  } else if(exp===4){ // metamorphosis
-   if(d<80){let q=nearest(n);if(q){addLink(n,q,"change");n.heat+=.04;if(n.heat>.8){n.type=n.type==="violet"?"blue":n.type==="gold"?"violet":"gold";n.heat=0;show("Une présence vient de changer.")}}}
+   if(d<80*scale){let q=nearest(n);if(q){addLink(n,q,"change");n.heat+=.04;if(n.heat>.8){n.type=n.type==="violet"?"blue":n.type==="gold"?"violet":"gold";n.heat=0;show("Une présence vient de changer.")}}}
  } else if(exp===5){ // absence
-   if(d<70&&interactions>4&&Math.random()<.015){n.alive=false;absences.push({x:n.x,y:n.y,life:1});show("Une présence s'est retirée.");interactions++}
-   else if(d<90){let q=nearest(n);if(q)addLink(n,q,"memory")}
+   if(d<70*scale&&interactions>4&&Math.random()<.015){n.alive=false;absences.push({x:n.x,y:n.y,life:1});show("Une présence s'est retirée.");interactions++;if(interactions>=9)contemplate.style.display="block"}
+   else if(d<90*scale){let q=nearest(n);if(q)addLink(n,q,"memory")}
  } else { // common world
-   if(d<100){let q=nearest(n);if(q&&Math.random()<.06)addLink(n,q,n.type===q.type?"kin":"plural")}
+   if(d<100*scale){let q=nearest(n);if(q&&Math.random()<.06)addLink(n,q,n.type===q.type?"kin":"plural")}
  }
 }
 function nearest(n){return nodes.filter(q=>q!==n&&q.alive).sort((a,b)=>dist(a,n)-dist(b,n))[0]}
@@ -154,7 +170,7 @@ function physics(){
  });
  // proximity grammar
  if(pointer.active){
-   let close=nodes.filter(n=>n.alive&&Math.hypot(n.x-pointer.x,n.y-pointer.y)<65);
+   let close=nodes.filter(n=>n.alive&&Math.hypot(n.x-pointer.x,n.y-pointer.y)<65*scale);
    if(close.length>1 && (exp===0||exp===6)) addLink(close[0],close[1],"soft");
  }
  links.forEach(l=>{
@@ -185,8 +201,9 @@ function draw(){
 }
 function loop(ts){t=ts;physics();draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
 function pos(e){let p=e.touches?e.touches[0]:e;pointer.x=p.clientX;pointer.y=p.clientY;pointer.active=true}
-canvas.addEventListener('pointerdown',pos);canvas.addEventListener('pointermove',e=>{if(e.buttons)pos(e)});
-canvas.addEventListener('pointerup',()=>pointer.active=false);
+canvas.addEventListener('pointerdown',pos);canvas.addEventListener('pointermove',e=>{if(e.pointerType==='mouse')pos(e);else if(e.buttons)pos(e)});
+canvas.addEventListener('pointerleave',()=>pointer.active=false);
+canvas.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse')pointer.active=false});
 canvas.addEventListener('touchstart',e=>{pos(e);e.preventDefault()},{passive:false});
 canvas.addEventListener('touchmove',e=>{pos(e);e.preventDefault()},{passive:false});
 canvas.addEventListener('touchend',()=>pointer.active=false);
