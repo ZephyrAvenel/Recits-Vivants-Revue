@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05060a">
+<title>LE FILET — Prototype 003M · Passe d’auteur + médiation</title>
+<style>
+:root{--bg:#05060a;--fg:#eee9df;--muted:#aaa69e}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif}
+body{touch-action:none;-webkit-user-select:none;user-select:none}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 46%,transparent 0 27%,rgba(4,5,9,.10) 54%,rgba(4,5,9,.74) 112%)}
+#brand{position:fixed;z-index:5;top:max(16px,env(safe-area-inset-top));left:18px;right:18px;pointer-events:none;font:10px/1.45 system-ui,sans-serif;letter-spacing:.19em;text-transform:uppercase;color:rgba(238,233,223,.38)}
+#intro,#outro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:26px;background:radial-gradient(circle at 50% 44%,rgba(17,20,29,.9),rgba(5,6,10,.988) 72%);transition:opacity 1.8s ease,visibility 1.8s ease}
+#outro{opacity:0;visibility:hidden}
+.panel{max-width:620px;text-align:center}
+.kicker{font:10px/1.5 system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#aaa69e;margin-bottom:22px}
+h1{font-size:clamp(35px,9vw,70px);font-weight:400;letter-spacing:.075em;margin:0 0 24px}
+p{font-size:clamp(16px,4vw,20px);line-height:1.7;color:#d5d0c6}
+button{appearance:none;border:1px solid rgba(238,233,223,.24);background:rgba(255,255,255,.028);color:#eee9df;border-radius:999px;padding:13px 22px;font:12px system-ui,sans-serif;letter-spacing:.08em;cursor:pointer}
+button:active{transform:scale(.98)}
+#whisper{position:fixed;z-index:9;left:50%;bottom:max(38px,calc(env(safe-area-inset-bottom) + 26px));transform:translateX(-50%);width:min(86vw,660px);text-align:center;pointer-events:none;font-size:clamp(15px,4vw,19px);font-style:italic;line-height:1.55;color:rgba(238,233,223,.79);opacity:0;transition:opacity 2s ease}
+#leave{position:fixed;z-index:10;right:18px;bottom:max(14px,env(safe-area-inset-bottom));opacity:0;pointer-events:none;transition:opacity 2.4s;padding:9px 14px;font-size:10px;background:rgba(6,7,11,.45)}
+#leave.show{opacity:.48;pointer-events:auto}
+
+#mediation{position:fixed;inset:0;z-index:24;display:grid;place-items:center;padding:22px;
+background:radial-gradient(circle at 50% 42%,rgba(17,20,29,.96),rgba(5,6,10,.995) 74%);
+opacity:0;visibility:hidden;transition:opacity 1.5s ease,visibility 1.5s ease;overflow:auto}
+#mediation.open{opacity:1;visibility:visible}
+.med-panel{width:min(680px,92vw);max-height:88vh;overflow:auto;text-align:left;padding:10px 4px 28px}
+.med-panel h2{font-size:clamp(26px,6vw,42px);font-weight:400;line-height:1.2;margin:0 0 24px}
+.med-panel p{font-size:clamp(15px,3.8vw,18px);line-height:1.72;margin:0 0 18px}
+.med-question{margin:26px 0;padding-left:18px;border-left:1px solid rgba(238,233,223,.22);font-style:italic;color:#eee9df}
+.med-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+#mediate{margin-right:8px}
+@media(max-height:560px){.med-panel{max-height:82vh}.med-panel p{line-height:1.55;margin-bottom:12px}}
+</style>
+</head>
+<body>
+<canvas id="world"></canvas><div id="vignette"></div>
+<div id="brand">Récits Vivants · Œuvre expérimentale 003</div>
+<div id="whisper"></div><button id="leave">Quitter le filet</button>
+
+<section id="intro"><div class="panel">
+<div class="kicker">Une expérience de l’interdépendance</div>
+<h1>LE FILET</h1>
+<p>Approchez. Éloignez. Attendez.<br><br>Le reste appartient au monde.</p>
+<button id="enter">Entrer</button>
+</div></section>
+
+<section id="outro"><div class="panel">
+<div class="kicker">Ce qui demeure</div>
+<p style="font-size:clamp(22px,5.4vw,34px);color:#eee9df">Rien de ce qui arrive ici<br>n'arrive seulement ici.</p>
+<div>
+<button id="mediate">Ouvrir la médiation</button>
+<button id="again">Revenir</button>
+</div>
+</div></section>
+
+<section id="mediation" aria-hidden="true">
+  <div class="med-panel">
+    <div class="kicker">Épilogue médiateur · Facultatif</div>
+    <h2>Rester un peu avec ce qui vient d’avoir lieu</h2>
+
+    <p><em>Le Filet</em> n’avait pas de solution à découvrir, ni de bonne manière d’être traversé.</p>
+
+    <p>Vous pouviez approcher certaines présences, les éloigner, attendre ou simplement observer. Mais une transformation produite quelque part pouvait continuer ailleurs — parfois immédiatement, parfois beaucoup plus tard.</p>
+
+    <p>Certaines relations ont gardé la trace de ce qui leur était arrivé. Certaines ont pu se rompre. Une absence a pu continuer à modifier la forme du monde. Et, progressivement, quelque chose pouvait commencer à exister entre les présences et agir sans vous.</p>
+
+    <p>La question n’était donc peut-être pas&nbsp;: <strong>«&nbsp;Que fallait-il faire&nbsp;?&nbsp;»</strong></p>
+
+    <p class="med-question">Jusqu’où pouvons-nous connaître les conséquences de ce que nous mettons en relation&nbsp;?</p>
+
+    <p>Peut-être n’avez-vous pas tout vu. C’était aussi une possibilité de l’œuvre.</p>
+
+    <div class="med-question">
+      Avez-vous remarqué quelque chose changer loin de votre geste&nbsp;?<br><br>
+      Une absence vous a-t-elle semblé continuer à agir&nbsp;?<br><br>
+      À quel moment avez-vous cessé d’agir pour simplement regarder&nbsp;?
+    </div>
+
+    <p style="color:#aaa69e">Ces questions ne demandent pas de réponse. Elles ouvrent simplement un espace entre l’expérience et la pensée.</p>
+
+    <div class="med-actions">
+      <button id="closeMediation">Retourner à l’épilogue</button>
+      <button id="reenterFromMediation">Retraverser l’œuvre</button>
+    </div>
+  </div>
+</section>
+
+<script>
+(()=>{
+'use strict';
+const c=document.getElementById('world'),ctx=c.getContext('2d'),intro=document.getElementById('intro'),outro=document.getElementById('outro'),mediation=document.getElementById('mediation'),whisper=document.getElementById('whisper'),leave=document.getElementById('leave');
+let W,H,D,last=performance.now(),T=0,started=false,ended=false,lastAction=0,gestures=0,autonomy=0,saturation=0,lossDone=false,thirdDone=false,ruptureDone=false;
+let pointer={down:false,x:0,y:0,node:null},nodes=[],rels=[],waves=[],ghosts=[],delayed=[];
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),rand=(a,b)=>a+Math.random()*(b-a),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function resize(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*D;c.height=H*D;c.style.width=W+'px';c.style.height=H+'px';ctx.setTransform(D,0,0,D,0,0)}
+addEventListener('resize',resize);resize();
+function make(x,y,i){return{id:i,x,y,hx:x,hy:y,r:rand(3.5,6),vis:i?0:1,target:i?0:1,e:rand(.12,.28),mem:0,res:rand(.15,.8),sens:rand(.55,1.25),phase:rand(0,6.28),gone:false,third:i===8||i===13}}
+function reset(){
+ T=lastAction=gestures=autonomy=saturation=0;lossDone=thirdDone=ruptureDone=false;nodes=[];rels=[];waves=[];ghosts=[];delayed=[];leave.classList.remove('show');
+ [[.5,.48],[.27,.3],[.73,.31],[.24,.69],[.76,.7],[.5,.18],[.5,.8],[.12,.5],[.88,.51],[.37,.59],[.65,.57],[.37,.38],[.64,.4],[.18,.18],[.82,.18],[.17,.82],[.84,.83],[.5,.63]].forEach((p,i)=>nodes.push(make(W*p[0]+rand(-14,14),H*p[1]+rand(-14,14),i)));
+}
+reset();
+function say(s,ms=3000){whisper.textContent=s;whisper.style.opacity=1;clearTimeout(say.t);say.t=setTimeout(()=>whisper.style.opacity=0,ms)}
+function link(a,b,p=.12,type='soft'){
+ if(!a||!b||a===b||a.gone||b.gone)return;
+ let r=rels.find(x=>!x.dead&&((x.a===a&&x.b===b)||(x.a===b&&x.b===a)));
+ if(!r){r={a,b,s:0,target:p,mem:0,age:0,frag:rand(.2,.85),dead:false,type,between:0};rels.push(r)} else r.target=Math.max(r.target,p);
+ return r;
+}
+function wave(n,p=.2){waves.push({x:n.x,y:n.y,t:0,life:rand(3.2,6),p})}
+function later(sec,fn){delayed.push({at:T+sec,fn})}
+function reveal(n,k=2){nodes.filter(q=>q!==n&&!q.gone).sort((a,b)=>dist(n,a)-dist(n,b)).slice(0,k).forEach((q,i)=>{q.target=Math.max(q.target,.18+i*.05);link(n,q,.07+i*.025)})}
+function propagate(n,p=.18,depth=0){
+ if(!n||n.gone||depth>2)return;n.e=clamp(n.e+p*n.sens);n.mem=clamp(n.mem+p*.45);wave(n,p);
+ rels.filter(r=>!r.dead&&(r.a===n||r.b===n)).forEach((r,i)=>{
+   const q=r.a===n?r.b:r.a,amount=p*(.42+r.s*.42)*(1-q.res);
+   later(1.4+i*.7+rand(.3,2.5),()=>{if(!q.gone){q.target=Math.max(q.target,.22);q.e=clamp(q.e+amount);wave(q,amount);if(amount>.08)propagate(q,amount*.34,depth+1)}})
+ });
+ if(T>48&&Math.random()<.48){const far=nodes.filter(q=>q!==n&&!q.gone).sort((a,b)=>dist(n,b)-dist(n,a))[Math.floor(rand(0,3))];if(far)later(rand(5,11),()=>{far.target=Math.max(far.target,.28);far.e=clamp(far.e+p*.4);wave(far,p*.45)})}
+}
+function touch(n){
+ if(!n||n.gone)return;gestures++;lastAction=T;n.target=1;n.e=clamp(n.e+.17);reveal(n,Math.min(4,1+Math.floor(T/75)));propagate(n,.2);
+ if(gestures===1)setTimeout(()=>say("Une présence."),500);
+ if(gestures===6)say("Cela continue ailleurs.");
+}
+function breakRel(r){
+ if(!r||r.dead)return;r.dead=true;r.scar=1;ruptureDone=true;ghosts.push({x:(r.a.x+r.b.x)/2,y:(r.a.y+r.b.y)/2,t:0,type:'scar'});say("Quelque chose manque ici.",3600)
+}
+function lose(n){
+ if(!n||n.gone||n.id===0)return;n.gone=true;lossDone=true;ghosts.push({x:n.x,y:n.y,t:0,type:'absence'});rels.filter(r=>!r.dead&&(r.a===n||r.b===n)).forEach(r=>r.dead=true);say("L'absence aussi prend place.",3800)
+}
+function dramaturgy(dt){
+ // Slower emergence and long unlabelled transitions.
+ const revealCount=T<18?1:T<48?3:T<85?6:T<125?9:T<170?12:T<215?15:18;
+ nodes.slice(0,revealCount).forEach((n,i)=>{if(!n.gone)n.target=Math.max(n.target,i===0?1:.06+Math.min(.22,T/900))});
+ const active=rels.filter(r=>!r.dead&&r.s>.14).length;saturation=clamp(saturation+(active/Math.max(1,nodes.length)-.34)*dt*.055);
+ // Saturation becomes perceptual compression; one old fragile relation eventually gives way.
+ if(T>105&&!ruptureDone&&(saturation>.28||T>132)){const r=rels.filter(x=>!x.dead).sort((a,b)=>(b.age+b.frag*25)-(a.age+a.frag*25))[0];if(r)breakRel(r)}
+ // The third is not announced: it creates an "between" where a relation could not hold.
+ if(T>142&&!thirdDone){
+   const th=nodes.find(n=>n.third&&!n.gone);const others=nodes.filter(n=>n!==th&&!n.gone&&n.vis>.08);
+   if(th&&others.length>3){th.target=.75;const a=others[1],b=others[others.length-2];link(th,a,.34,'third');link(th,b,.34,'third');th.e=.52;wave(th,.3);thirdDone=true}
+ }
+ // Old relational memory returns altered.
+ if(T>178&&Math.random()<dt*.045&&rels.length){const r=rels[Math.floor(Math.random()*rels.length)];if(r&&!r.dead){r.target=Math.max(r.target,.3);r.between=clamp(r.between+.22);wave(r.a,.08);later(rand(2,5),()=>wave(r.b,.08))}}
+ if(T>218&&!lossDone){const n=nodes.filter(n=>!n.gone&&n.id!==0).sort((a,b)=>b.mem-a.mem)[0];if(n)lose(n)}
+ if(T>245){autonomy=clamp(autonomy+dt*.014);if(T>262)leave.classList.add('show')}
+ // Autonomous relational life: the between acts, not merely the points.
+ if(T>72&&Math.random()<dt*(.035+autonomy*.13)){
+   const living=rels.filter(r=>!r.dead&&r.mem>.015);
+   if(living.length){const r=living[Math.floor(Math.random()*living.length)];r.between=clamp(r.between+.08);r.target=Math.max(r.target,.12+r.mem*.3);
+     if(Math.random()<.45){const near=nodes.filter(n=>!n.gone&&n!==r.a&&n!==r.b).sort((a,b)=>dist({x:(r.a.x+r.b.x)/2,y:(r.a.y+r.b.y)/2},a)-dist({x:(r.a.x+r.b.x)/2,y:(r.a.y+r.b.y)/2},b))[0];if(near){near.target=Math.max(near.target,.16);later(rand(1.5,4),()=>wave(near,.07))}}
+   }
+ }
+ // Waiting is meaningful, but text is rare.
+ if(T-lastAction>13&&T-lastAction<13+dt*2&&T>25){const alive=nodes.filter(n=>!n.gone&&n.vis>.08);if(alive.length){const n=alive[Math.floor(Math.random()*alive.length)];propagate(n,.07);lastAction=T-4;if(T<90)say("Même sans geste.",2500)}}
+}
+function update(dt){
+ if(!started||ended)return;T+=dt;delayed.sort((a,b)=>a.at-b.at);while(delayed.length&&delayed[0].at<=T){try{delayed.shift().fn()}catch(e){}}
+ dramaturgy(dt);
+ nodes.forEach(n=>{n.vis+=(n.target-n.vis)*Math.min(1,dt*.32);n.e=Math.max(.08,n.e*Math.pow(.995,dt*60));n.mem*=Math.pow(.9995,dt*60);if(pointer.node!==n){n.x+=(n.hx-n.x)*dt*.013;n.y+=(n.hy-n.y)*dt*.013}});
+ rels.forEach(r=>{r.age+=dt;if(r.dead){r.s*=Math.pow(.986,dt*60);return}r.s+=(r.target-r.s)*dt*.38;r.target*=Math.pow(.999,dt*60);r.mem=clamp(r.mem+r.s*dt*.003);r.between*=Math.pow(.998,dt*60)});
+ waves.forEach(w=>w.t+=dt);waves=waves.filter(w=>w.t<w.life);ghosts.forEach(g=>g.t+=dt);
+}
+function rgb(n){return n.id%3===0?'238,211,166':n.id%3===1?'183,202,235':'214,190,230'}
+function draw(){
+ ctx.clearRect(0,0,W,H);const bg=ctx.createRadialGradient(W*.5,H*.47,0,W*.5,H*.47,Math.max(W,H)*.75);
+ const lift=Math.floor(saturation*7);bg.addColorStop(0,`rgb(${10+lift},${12+lift},${18+Math.floor(autonomy*8)})`);bg.addColorStop(1,'rgb(4,5,8)');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ ghosts.forEach(g=>{const a=g.type==='absence'?.11:Math.max(0,.13-g.t*.002);ctx.setLineDash(g.type==='absence'?[1,9]:[2,7]);ctx.strokeStyle=`rgba(196,187,207,${a})`;ctx.lineWidth=.7;ctx.beginPath();ctx.arc(g.x,g.y,(g.type==='absence'?22:14)+Math.sin(T*.23+g.x)*3+(g.type==='scar'?g.t*.11:0),0,Math.PI*2);ctx.stroke();ctx.setLineDash([])});
+ rels.forEach(r=>{
+   const alpha=r.s*Math.min(r.a.vis,r.b.vis)*(r.dead?.16:.62);if(alpha<.004)return;
+   const mx=(r.a.x+r.b.x)/2+Math.sin(T*.18+r.age)*8,my=(r.a.y+r.b.y)/2+Math.cos(T*.16+r.age)*8;
+   const gr=ctx.createLinearGradient(r.a.x,r.a.y,r.b.x,r.b.y);gr.addColorStop(0,`rgba(${rgb(r.a)},${alpha})`);gr.addColorStop(.5,`rgba(226,221,215,${alpha*.38})`);gr.addColorStop(1,`rgba(${rgb(r.b)},${alpha})`);
+   ctx.strokeStyle=gr;ctx.lineWidth=.4+r.s*1.45;ctx.beginPath();ctx.moveTo(r.a.x,r.a.y);ctx.quadraticCurveTo(mx,my,r.b.x,r.b.y);ctx.stroke();
+   // The "between" slowly becomes a living perceptible entity.
+   const ba=clamp((r.mem*.5+r.between)*.34,0,.22)*Math.min(r.a.vis,r.b.vis);
+   if(ba>.008){const pulse=2.2+Math.sin(T*.7+r.age)*1.1+r.between*4;const g=ctx.createRadialGradient(mx,my,0,mx,my,14+pulse*3);g.addColorStop(0,`rgba(238,229,207,${ba})`);g.addColorStop(1,'rgba(238,229,207,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(mx,my,14+pulse*3,0,Math.PI*2);ctx.fill()}
+ });
+ waves.forEach(w=>{const p=w.t/w.life,a=(1-p)*w.p*.28;ctx.strokeStyle=`rgba(229,222,208,${a})`;ctx.lineWidth=.6;ctx.beginPath();ctx.arc(w.x,w.y,10+p*(70+w.p*90),0,Math.PI*2);ctx.stroke()});
+ nodes.forEach(n=>{if(n.gone||n.vis<.004)return;const pulse=1+Math.sin(T*(.55+n.sens*.16)+n.phase)*.1,rr=n.r*pulse*(1+n.e*.55);const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,rr*(6+n.mem*3));g.addColorStop(0,`rgba(${rgb(n)},${.65*n.vis})`);g.addColorStop(.18,`rgba(${rgb(n)},${.22*n.vis})`);g.addColorStop(1,`rgba(${rgb(n)},0)`);ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,rr*(6+n.mem*3),0,Math.PI*2);ctx.fill();ctx.fillStyle=`rgba(245,240,228,${(.48+n.e*.34)*n.vis})`;ctx.beginPath();ctx.arc(n.x,n.y,Math.max(1,rr*.4),0,Math.PI*2);ctx.fill()});
+}
+function loop(now){const dt=Math.min(.04,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+function nearest(x,y){let n=null,dd=1e9;nodes.forEach(q=>{if(!q.gone&&q.vis>.07){const z=Math.hypot(x-q.x,y-q.y);if(z<dd){dd=z;n=q}}});return dd<85?n:null}
+c.addEventListener('pointerdown',e=>{if(!started||ended)return;pointer.down=true;pointer.x=e.clientX;pointer.y=e.clientY;pointer.node=nearest(pointer.x,pointer.y);if(pointer.node)touch(pointer.node)});
+c.addEventListener('pointermove',e=>{if(!started||ended)return;pointer.x=e.clientX;pointer.y=e.clientY;const n=pointer.node;if(pointer.down&&n&&!n.gone){const dx=pointer.x-n.x,dy=pointer.y-n.y;n.x+=dx*.1;n.y+=dy*.1;n.hx+=dx*.012;n.hy+=dy*.012;n.e=clamp(n.e+.003);nodes.forEach(q=>{if(q!==n&&!q.gone&&q.vis>.1&&dist(n,q)<82+(1-n.res)*25&&Math.random()<.025*(1-q.res)){const r=link(n,q,.12,'proximity');if(r){r.mem=clamp(r.mem+.012);if(Math.random()<.08)propagate(q,.035)}}})}});
+addEventListener('pointerup',()=>{pointer.down=false;pointer.node=null});
+document.getElementById('enter').onclick=()=>{started=true;lastAction=0;intro.style.opacity=0;intro.style.visibility='hidden';setTimeout(()=>say("Une présence."),1600)};
+function finish(){if(ended)return;ended=true;leave.classList.remove('show');outro.style.visibility='visible';outro.style.opacity=1}
+leave.onclick=finish;
+function reenter(){
+  mediation.classList.remove('open');mediation.setAttribute('aria-hidden','true');
+  reset();ended=false;started=true;outro.style.opacity=0;outro.style.visibility='hidden';
+  setTimeout(()=>say("Quelque chose recommence."),1400);
+}
+document.getElementById('again').onclick=reenter;
+document.getElementById('mediate').onclick=()=>{
+  mediation.classList.add('open');mediation.setAttribute('aria-hidden','false');
+};
+document.getElementById('closeMediation').onclick=()=>{
+  mediation.classList.remove('open');mediation.setAttribute('aria-hidden','true');
+};
+document.getElementById('reenterFromMediation').onclick=reenter;
+})();
+</script>
+</body>
+</html>
