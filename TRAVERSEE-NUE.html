@@ -1,0 +1,915 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>TRAVERSÉE NUE — œuvre expérimentale</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090d15;color:#e9edf5;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;touch-action:none}body{overscroll-behavior:none}.app{position:fixed;inset:0;background:radial-gradient(circle at 50% 45%,#101827 0,#090d15 65%)}canvas{position:absolute;inset:0;width:100%;height:100%}.veil{position:absolute;inset:0;display:grid;place-items:center;background:#090d15;z-index:5;transition:opacity 1.3s}.veil.gone{opacity:0;pointer-events:none}.intro{text-align:center;max-width:27rem;padding:2rem}.intro h1{font-size:clamp(1.25rem,5vw,1.8rem);font-weight:560;letter-spacing:.08em;margin:0 0 1.5rem}.intro p{font-size:1rem;line-height:1.65;color:#b9c2d1;margin:.4rem 0}.intro button{margin-top:2rem;border:1px solid #526078;background:transparent;color:#eef3fb;border-radius:999px;padding:.85rem 1.5rem;font-size:1rem}.whisper{position:absolute;left:50%;top:8%;transform:translateX(-50%);width:min(82vw,32rem);text-align:center;font-size:.95rem;line-height:1.45;letter-spacing:.02em;color:#c7cfdb;opacity:0;transition:opacity 1.2s;pointer-events:none;text-shadow:0 1px 8px #000}.whisper.show{opacity:.9}.end{position:absolute;inset:0;display:grid;place-items:center;background:rgba(9,13,21,.88);opacity:0;pointer-events:none;transition:opacity 1.8s;z-index:4;overflow-y:auto;padding:max(1rem,env(safe-area-inset-top)) max(1rem,env(safe-area-inset-right)) max(1.25rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left))}.end.show{opacity:1;pointer-events:auto}.end>div{text-align:center;width:min(100%,28rem);padding:1.25rem}.end p{font-size:1.08rem;line-height:1.7;color:#d4dbe6}.end button{margin-top:1.4rem;border:1px solid #4b5870;background:transparent;color:#eef3fb;border-radius:999px;padding:.75rem 1.3rem}.debug{display:none;position:absolute;left:8px;bottom:8px;z-index:8;background:#05070bcc;border:1px solid #334057;padding:8px;font:11px ui-monospace,monospace;white-space:pre;color:#aebbd0;max-width:94vw}.debug.on{display:block}.question{display:none!important;margin-top:1.2rem;opacity:0;max-height:0;overflow:hidden;transition:opacity 1s,max-height 1s;padding:0}.question.show{opacity:1;max-height:22rem;overflow:visible}.question p{font-size:.94rem;color:#b9c2d1}.answers{display:flex;justify-content:center;gap:.55rem;flex-wrap:wrap;padding:0}.answers button{margin-top:.4rem;padding:.72rem 1.05rem;font-size:.92rem;min-width:5.4rem;touch-action:manipulation;position:relative;z-index:2}.afterAnswer{min-height:1.5rem;margin-top:.8rem;font-size:.9rem;color:#aeb8c8;padding:0}#again{display:block;margin:1.4rem auto 0;touch-action:manipulation;position:relative;z-index:2}@media(max-height:720px){.end>div{padding:.7rem}.end p{line-height:1.45}.question{display:none!important;margin-top:.65rem}.question.show{max-height:24rem}#again{margin-top:.8rem}}
+
+.lab{display:none!important;position:fixed;inset:0;z-index:20;background:#070a10;color:#e9edf5;overflow:auto;padding:16px;font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;touch-action:auto}.lab.on{display:none!important}.lab h1{font:600 18px/1.2 system-ui;margin:0 0 10px}.lab .bar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}.lab button{border:1px solid #526078;background:#0b111c;color:#eef3fb;border-radius:999px;padding:8px 12px}.lab table{width:100%;border-collapse:collapse;margin:10px 0}.lab th,.lab td{border-bottom:1px solid #263044;padding:6px;text-align:left;vertical-align:top}.lab pre{white-space:pre-wrap;background:#0b111c;border:1px solid #263044;padding:10px;border-radius:10px}.lab .muted{color:#9aa8bc}.lab .ok{color:#c7d8c9}.lab .warn{color:#e1c6a1}.lab .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.lab .card{border:1px solid #263044;border-radius:12px;padding:10px;background:#0b111c}.lab .selected{border-color:#6e86aa;background:#111b2a}.lab .pass{color:#c7d8c9}.lab .fail{color:#e4a9a9}.lab .small{font-size:11px;color:#9aa8bc}@media(max-width:560px){.lab .grid{grid-template-columns:1fr}}
+
+.bProbe{position:fixed;left:50%;top:max(18px,env(safe-area-inset-top));transform:translateX(-50%);z-index:28;display:none;min-width:250px;max-width:calc(100vw - 36px);padding:10px 14px;border:1px solid rgba(148,163,184,.34);border-radius:16px;background:rgba(8,13,24,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#d8dee9;text-align:center;font:500 15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.bProbe.on{display:block}.bProbe strong{font-weight:700;color:#f3f4f6}.bProbe .sub{display:block;margin-top:3px;color:#aeb8c8;font-size:12px}.bProbe.done{border-color:rgba(134,239,172,.45)}
+</style></head><body><!-- TRAVERSÉE NUE · édition publique v1.3.2 · silence avant sortie · dramaturgie de la découverte · sortie organique garantie · moteur causal issu du cycle LAB v0.1.24 ; instrumentation non exposée. --><main class="app"><canvas id="c"></canvas><div id="bProbe" class="bProbe" aria-live="polite"></div><div id="whisper" class="whisper"></div><div id="veil" class="veil"><div class="intro"><h1>TRAVERSÉE NUE</h1><p>Cinq présences.</p><p>Touchez. Déplacez. Éloignez. Rapprochez.<br>Ou attendez.</p><p>Il n’y a rien à réussir.</p><button id="enter">Entrer</button></div></div><div id="end" class="end"><div><p id="endText">Quelque chose demeure.</p><div id="question" class="question"><p>Qu’est-ce qui vous semble avoir changé pendant votre traversée ?</p><div class="answers"><button data-answer="monde">Le monde</button><button data-answer="relations">Les relations</button><button data-answer="incertain">Je ne sais pas</button></div><div id="afterAnswer" class="afterAnswer"></div></div><button id="again">Revenir</button></div></div><pre id="debug" class="debug"></pre><section id="lab" class="lab" aria-hidden="true"><h1>LAB — Autopsie de l’alphabet A/B/C/D · v0.1.24</h1><div class="muted">Instrument interne analytique. v0.1.18 à v0.1.23 restent gelées. v0.1.24 ne modifie aucune loi, aucun seuil, aucune qualification et ne crée aucun run. Elle décompose chaque lettre A/B/C/D en quatre niveaux : condition imposée → événements produits → variables d’état → régime observé. Puis A, B et D subissent le même droit de destruction déjà appliqué à C : le test demande ce qui est perdu si le nom de classe disparaît tandis que toutes les informations causales restent conservées. Le corpus vivant et localStorage restent inchangés.</div><div class="bar"><button id="labClose">Retour au monde</button><button id="labNewRun" style="display:none">Nouveau run expérimental</button><button id="labRefresh">Actualiser</button><button id="labExport">Exporter JSON</button><button id="labClear">Effacer les runs LAB</button></div><h2>1 · Contrôle miroir B/C</h2><div class="bar"><button id="mirrorBC1">Contrôle miroir B/C — 1 paire</button><button id="recipeA1">Exécuter recette A</button><button id="recipeB1">Exécuter recette B</button><button id="recipeC1">Exécuter recette C — validation 1 run</button><button id="recipeA3">Série A ×3</button><button id="recipeB3">Série B ×3</button><button id="recipeC3" title="Débloqué après un C_STD_001 complet">Série C ×3</button><button id="recipeD1">Exécuter D indépendant</button><button id="recipeD3">Série D ×3</button></div><div id="recipeStatus" class="card">Aucun contrôle miroir en cours.</div><div id="cDiagnostic" class="card"><b>Contrôle miroir B/C de protected</b><br><span class="muted">Non exécuté. Utilisez « Contrôle miroir B/C — 1 paire ». Le contrôle s’arrête après le troisième épisode, avant toute restauration, S* ou g*.</span></div><p class="muted">B_MIRROR_001 et C_MIRROR_001 reçoivent exactement la même séquence : A → (0.55,0.30) pendant 300 ms, A → (0.27,0.32) pendant 350 ms, trois fois. Le seul changement est l’étiquette expérimentale B ou C. Le LAB relève la transition native protected=false → true, son prédicat exact, les valeurs au franchissement et la dernière entrée externe. Le contrôle ne déclenche aucune restauration et n’applique ni S* ni g*.</p><div class="card"><b>Règle gelée v0.1.17</b><br>Pour C uniquement, un <code>protected=true</code> déjà démontré comme commun aux bras B/C avant restauration est enregistré comme <b>baseline partagée</b>. Il n’est pas effacé et le moteur n’est pas modifié. C n’est verrouillé qu’après restauration native observée. Lancez d’abord <b>Exécuter recette C — validation 1 run</b>. La série C ×3 reste bloquée jusqu’à ce premier run complet.</div><h2>2 · Trace analytique C→D</h2><div class="bar"><button id="traceCD1">Tracer C→D — 1 run</button></div><div id="cTransitionTrace" class="card"><b>Trace C→D</b><br><span class="muted">Non exécutée. Le trace s’arrête après normalisation S* et n’applique pas g*.</span></div><p class="muted">Chronologie observée : état initial → épisodes A–B #1/#2/#3 → première transition du classificateur dérivé → baseline partagée B/C → restauration native → C_QUALIFIED → normalisation S*. Le moteur et le classificateur ne sont pas modifiés ; ils sont seulement lus.</p><h2>3 · Contrôle D indépendant</h2><div class="card"><b>D_STD_001</b><br>Trois épisodes A–B sont produits avec les mêmes coordonnées et temporisations de base. Au troisième épisode, le moteur doit activer lui-même <code>protected</code> puis accumuler le transfert jusqu’au seuil déjà utilisé par la qualification D (<code>transfer &gt; .10</code>). La recette exige <b>restores=0 avant S*</b>. Ensuite seulement : S* → même g*. Si une restauration apparaît pendant la réponse à g*, elle est enregistrée comme conséquence du moteur et non comme histoire préalable.</div><h2>4 · Autopsie propre de la restauration</h2><div class="bar"><button id="autopsyCD1">Autopsie restauration — R vs NR</button></div><div id="autopsyCD" class="card"><b>Autopsie propre de la restauration</b><br><span class="muted">Non exécutée. Un état unique juste avant C_RESTORE est cloné en R et NR. Aucun g* n’est appliqué et aucun run n’est ajouté au corpus.</span></div><p class="muted">Question : à état, temps, qAB relâché et protected strictement identiques, l’événement restauration produit-il un effet causal propre ? R laisse s’exécuter la restauration native ; NR neutralise uniquement cet événement pendant la même tranche analytique. La décision porte exclusivement sur ΔdC, ΔomegaC, ΔdD et Δtransfer.</p><h2>5 · Test de suppression de C</h2><div class="bar"><button id="suppressC1">Tester la suppression de C — corpus gelé</button></div><div id="cSuppression" class="card"><b>Suppression analytique de C</b><br><span class="muted">Non exécutée. Le test relit uniquement les runs finalisés déjà présents sur cet appareil. Il ne supprime rien du moteur, du corpus ni du stockage.</span></div><p class="muted">Principe : dans une copie en mémoire, la branche <code>restores &gt; 0 ⇒ C</code> est retirée du classificateur. RESTORE et toutes les variables causales restent disponibles. Trois questions sont ensuite posées : (1) peut-on encore reconnaître les histoires restaurées ? (2) perd-on un état causal irréductible ? (3) le label C apporte-t-il une discrimination supplémentaire de la réponse à g* par rapport aux états non-C qui lui sont causalement comparables ?</p><h2>6 · Autopsie de l’alphabet A/B/C/D</h2><div class="bar"><button id="alphabetAutopsy1">Autopsier l’alphabet — corpus gelé</button></div><div id="alphabetAutopsy" class="card"><b>Autopsie de l’alphabet</b><br><span class="muted">Non exécutée. Le test relit uniquement les runs finalisés. Il ne change ni le moteur, ni les recettes, ni les labels dans le corpus.</span></div><p class="muted">Principe : pour chaque lettre, distinguer strictement (1) la condition/recette imposée, (2) les événements effectivement produits, (3) les variables d’état qui en portent les effets, (4) le régime dérivé observé. Une lettre ne survit comme catégorie de régime que si sa suppression fait perdre une distinction causale ou prédictive qui n’est pas déjà portée par ces niveaux.</p><h2>7 · Protocole manuel (conservé)</h2><div id="conditionGrid" class="grid"><button data-cond="A">A · faible histoire</button><button data-cond="B">B · répétition</button><button data-cond="C">C · restauration</button><button data-cond="D">D · transfert</button></div><div id="labGuide" class="card"></div><h2>8 · Vérifier puis tester le même geste g*</h2><div class="bar"><button id="labNormalize">Normaliser la géométrie S*</button><button id="labGStar">Appliquer g*</button></div><div id="labStatus" class="card"></div><div id="labSummary"></div><div id="labAudit"></div><div id="labRepeat"></div><div id="labCompare"></div><div id="causalMatrix"></div><h2>Run courant</h2><pre id="labCurrent"></pre><h2>Journal causal</h2><pre id="labJournal"></pre><p class="small">Accès caché mobile : 7 touchers rapides dans le coin supérieur gauche.</p></section></main>
+<script>
+(()=>{'use strict';
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),wh=document.getElementById('whisper'),dbg=document.getElementById('debug'),bProbe=document.getElementById('bProbe');let W=0,H=0,dpr=1,last=performance.now(),entered=false,drag=null,dragStart=null,whTimer=null;
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),lerp=(a,b,t)=>a+(b-a)*t;
+const init={p:[{id:'A',x:.27,y:.32,h:38},{id:'B',x:.67,y:.30,h:38},{id:'C',x:.49,y:.62,h:40},{id:'D',x:.73,y:.67,h:37},{id:'E',x:.24,y:.72,h:37}],dC:5,dD:.2,omegaC:.45,old:1};
+let S;
+const RUN_KEY='traversee-nue:v0.1.1:runs';
+// v0.1.6 — couche expérimentale uniquement : aucune modification des lois v0.1.2. En protocole LAB, la clôture publique automatique est suspendue jusqu’au retour à un run public.
+const LAB_KEY='traversee-nue:v0.1.21:lab-runs';
+const PREV_LAB_KEY='traversee-nue:v0.1.20:lab-runs';
+const MIRROR_KEY='traversee-nue:v0.1.16:mirror-bc-protected';
+const V016='0.1.23';
+	const CTRACE_KEY='traversee-nue:v0.1.18:c-transition-trace';
+const AUTOPSY_KEY='traversee-nue:v0.1.21:autopsy-cd-residue';
+// Migration non destructive : conserve le corpus LAB v0.1.20 déjà enregistré sur cet appareil.
+try{if(!localStorage.getItem(LAB_KEY)&&localStorage.getItem(PREV_LAB_KEY))localStorage.setItem(LAB_KEY,localStorage.getItem(PREV_LAB_KEY));}catch(e){}
+const deep=o=>JSON.parse(JSON.stringify(o));
+const SSTAR={A:{x:.27,y:.32},B:{x:.67,y:.30},C:{x:.49,y:.62},D:{x:.73,y:.67},E:{x:.24,y:.72}};
+const GSTAR={actor:'A',target:{x:.55,y:.30},windowMs:3000,description:'A est déplacée de S* vers (0.55,0.30), près de B, puis le monde répond pendant 3 s.'};
+const RECIPES={A_STD_001:{id:'A_STD_001',condition:'A',episodes:0},B_STD_001:{id:'B_STD_001',condition:'B',episodes:3,active:{x:.55,y:.30},rest:{x:.27,y:.32},activeMs:300,restMs:350},C_STD_001:{id:'C_STD_001',condition:'C',episodes:3,active:{x:.55,y:.30},rest:{x:.27,y:.32},activeMs:300,restMs:350,restoreC:{x:.49,y:.62}},D_STD_001:{id:'D_STD_001',condition:'D',episodes:3,active:{x:.55,y:.30},rest:{x:.27,y:.32},activeMs:300,restMs:350}};
+let autoBusy=false;
+const GUIDES={A:'A — Faible histoire : 0 à 2 gestes, au plus 1 épisode A–B, aucune restauration, aucune protection. Puis revenez au LAB.',B:'B — Répétition : produisez au moins 3 épisodes distincts A–B, sans restaurer C ni l’éloigner assez pour la protéger. Au troisième épisode valide, le banc d’essai verrouille automatiquement B_QUALIFIED et suspend l’évolution : revenez alors au LAB.',C:'C — Restauration : produisez ≥3 épisodes A–B, puis ramenez C près de sa position d’origine jusqu’à déclencher « La forme revient. Pas l’histoire. ». Ne protégez pas C.',D:'D — Transfert : produisez ≥3 épisodes A–B, puis éloignez C suffisamment pour déclencher « Ici, la charge cesse. » et laissez la tension agir jusqu’à ce que le transfert vers D soit mesurable.'};
+function derivedHistory(){if(S.protected||S.transfer>.05)return'D';if(S.restores>0)return'C';if(S.episodes>=3)return'B';return'A'}
+function mirrorSupportsSharedProtected(){const m=mirrorLoad();return !!(m?.comparison?.mirrorMechanism&&m?.comparison?.bothActivated&&m?.comparison?.samePredicate&&m?.comparison?.sameSource&&m?.comparison?.sameHistoricalGate)}
+function cBaselineIsShared(){const b=S.experiment?.cSharedBaseline;return !!(b&&b.protected&&b.history>=3&&b.episodes>=3&&b.activationSource==='mirror-common-native-threshold')}
+function qualifies(cond){if(!cond)return false;if(cond==='A')return S.actions<=2&&S.episodes<=1&&S.restores===0&&!S.protected;if(cond==='B')return !!S.experiment?.bQualified || (S.episodes>=3&&S.restores===0&&!S.protected);if(cond==='C')return !!S.experiment?.cQualified || (S.episodes>=3&&S.restores>=1&&!!S._restored&&cBaselineIsShared());if(cond==='D')return S.episodes>=3&&S.protected&&S.transfer>.10;return false}
+function causalState(){return{t:+((Date.now()-S.startedAt)/1000).toFixed(3),condition:S.experiment?.condition||null,derived:derivedHistory(),p:Object.fromEntries(S.p.map(p=>[p.id,{x:+p.x.toFixed(4),y:+p.y.toFixed(4),load:+p.load.toFixed(4),mem:+p.mem.toFixed(4)}])),dC:+S.dC.toFixed(4),dD:+S.dD.toFixed(4),omegaC:+S.omegaC.toFixed(4),old:+S.old.toFixed(4),episodes:S.episodes,history:S.history,rigid:S.rigid,transfer:+S.transfer.toFixed(4),restores:S.restores,protected:S.protected,actions:S.actions,phase:S.phase,qAB:+qAB().toFixed(4)}}
+function causalLog(kind,data={}){if(!S.causalJournal)S.causalJournal=[];S.causalJournal.push({seq:S.causalJournal.length+1,t:+((Date.now()-S.startedAt)/1000).toFixed(3),kind,condition:S.experiment?.condition||null,derived:derivedHistory(),...data});if(S.causalJournal.length>500)S.causalJournal.shift()}
+function deltaState(a,b){const cp=(id,k)=>(b.p[id][k]-a.p[id][k]);return{dC:+(b.dC-a.dC).toFixed(4),dD:+(b.dD-a.dD).toFixed(4),omegaC:+(b.omegaC-a.omegaC).toFixed(4),transfer:+(b.transfer-a.transfer).toFixed(4),Cx:+cp('C','x').toFixed(4),Cy:+cp('C','y').toFixed(4),Cload:+cp('C','load').toFixed(4),Dload:+cp('D','load').toFixed(4),qAB:+(b.qAB-a.qAB).toFixed(4)}}
+function engineSnapshot(){return{causal:causalState(),episode:S.episode,protectTime:S.protectTime,restored:!!S._restored,phaseTime:S.phaseTime,moves:deep(S.moves),distanceMoved:deep(S.distanceMoved)}}
+function restoreEngineSnapshot(es){if(!es)return;const c=es.causal;for(const p of S.p){const q=c.p[p.id];p.x=q.x;p.y=q.y;p.load=q.load;p.mem=q.mem;p.vx=0;p.vy=0;}S.dC=c.dC;S.dD=c.dD;S.omegaC=c.omegaC;S.old=c.old;S.episodes=c.episodes;S.history=c.history;S.rigid=c.rigid;S.transfer=c.transfer;S.restores=c.restores;S.protected=c.protected;S.actions=c.actions;S.phase=c.phase;S.episode=!!es.episode;S.protectTime=es.protectTime||0;S._restored=!!es.restored;S.phaseTime=es.phaseTime||S.phaseTime;if(es.moves)S.moves=deep(es.moves);if(es.distanceMoved)S.distanceMoved=deep(es.distanceMoved)}
+function lockBQualification(){if(S.experiment?.mirrorAuditMode)return false;if(S.experiment?.condition!=='B'||S.experiment?.bQualified)return false;if(!(S.episodes>=3&&S.restores===0&&!S.protected))return false;const snap=causalState(),engine=engineSnapshot();S.experiment.bQualified={lockedAt:Date.now(),snapshot:deep(snap),engine:deep(engine)};S._labFreeze=true;S._labTestActive=true;causalLog('B_QUALIFIED',{snapshot:deep(snap)});labStore(false);return true}
+function lockCQualification(){if(S.experiment?.mirrorAuditMode)return false;if(S.experiment?.condition!=='C'||S.experiment?.cQualified)return false;const restorationObserved=S.episodes>=3&&S.restores>=1&&!!S._restored;const sharedBaseline=cBaselineIsShared();if(!restorationObserved||!sharedBaseline)return false;const snap=causalState(),engine=engineSnapshot();const b=S.experiment.cSharedBaseline;S.experiment.cQualified={lockedAt:Date.now(),snapshot:deep(snap),engine:deep(engine),witness:{episodes:S.episodes,restores:S.restores,_restored:!!S._restored,protected:!!S.protected,transfer:+S.transfer.toFixed(4),sharedProtectedBaseline:deep(b),mirrorEvidence:mirrorSupportsSharedProtected(),rule:"protected déjà commun à B/C avant restauration n'invalide pas C"}};S._labFreeze=true;S._labTestActive=true;causalLog('C_QUALIFIED_MIRROR_BASED',{snapshot:deep(snap),witness:deep(S.experiment.cQualified.witness)});labStore(false);return true}
+
+function normalizeGeometry(){if(!S.experiment?.condition)return alert('Choisissez d’abord A, B, C ou D.');if(!qualifies(S.experiment.condition))return alert('Le run ne satisfait pas encore le protocole '+S.experiment.condition+'.');const cond=S.experiment.condition,isB=cond==='B',isC=cond==='C',locked=isB?S.experiment.bQualified:isC?S.experiment.cQualified:null;if(locked?.engine)restoreEngineSnapshot(locked.engine);S._labFreeze=true;S._labTestActive=true;S.experiment.preNormalize=locked?.snapshot?deep(locked.snapshot):causalState();for(const p of S.p){const t=SSTAR[p.id];p.x=t.x;p.y=t.y;p.vx=0;p.vy=0;p.load=0;}S.episode=false;S.experiment.normalized=true;S.experiment.beforeG=causalState();const source=isB?'B_QUALIFIED':isC?'C_QUALIFIED':'CURRENT';causalLog('NORMALIZE_S_STAR',{condition:cond,source,before:S.experiment.preNormalize,after:S.experiment.beforeG});if(!locked)S._labFreeze=false;labStore(false);renderLab()}
+function applyGStar(){if(!S.experiment?.condition)return alert('Choisissez d’abord un protocole.');if(!S.experiment.normalized)return alert('Normalisez d’abord la géométrie S*.');if(S.experiment.gStarRunning||S.experiment.gStarDone)return;const isB=S.experiment.condition==='B',isC=S.experiment.condition==='C';S._labTestActive=true;S._labFreeze=false;S.experiment.gStarRunning=true;const before=causalState(),a=P(GSTAR.actor),from={x:a.x,y:a.y};a.x=GSTAR.target.x;a.y=GSTAR.target.y;S.actions++;S.moves.A++;S.distanceMoved.A+=Math.hypot(a.x-from.x,a.y-from.y);observe('G_STAR_APPLY',{actor:GSTAR.actor,from,to:GSTAR.target,windowMs:GSTAR.windowMs});S.experiment.gStar={definition:GSTAR.description,before,appliedAt:Date.now(),source:isB?'B_QUALIFIED':isC?'C_QUALIFIED':null};setTimeout(()=>{const after=causalState();S.experiment.gStar.after=after;S.experiment.gStar.delta=deltaState(before,after);S.experiment.gStarDone=true;S.experiment.gStarRunning=false;S._labTestActive=false;S._labFreeze=true;S.experiment.resultLocked={lockedAt:Date.now(),qualified:qualifies(S.experiment.condition),after:deep(after),delta:deep(S.experiment.gStar.delta),regime:trajectory()};causalLog('G_STAR_RESULT',{delta:S.experiment.gStar.delta,source:isB?'B_QUALIFIED':isC?'C_QUALIFIED':'CURRENT',resultLocked:true});labStore(true);renderLab()},GSTAR.windowMs);renderLab()}
+function labStore(final=false){const locked=S.experiment?.resultLocked;const beforeG=S.experiment?.gStar?.before||S.experiment?.beforeG||null;const afterG=S.experiment?.gStar?.after||null;const derivedBeforeG=beforeG?(beforeG.protected||beforeG.transfer>.05?'D':beforeG.restores>0?'C':beforeG.episodes>=3?'B':'A'):null;const derivedAfterG=afterG?(afterG.protected||afterG.transfer>.05?'D':afterG.restores>0?'C':afterG.episodes>=3?'B':'A'):derivedHistory();const rec={version:V016,runId:S.runId,startedAt:new Date(S.startedAt).toISOString(),savedAt:new Date().toISOString(),final:final||!!locked,condition:S.experiment?.condition||null,recipeId:S.experiment?.recipeId||null,recipeSpec:S.experiment?.recipeSpec||null,qualified:locked?!!locked.qualified:qualifies(S.experiment?.condition),derived:derivedAfterG,derivedBeforeG,derivedAfterG,normalized:!!S.experiment?.normalized,preG:S.experiment?.beforeG?deep(S.experiment.beforeG):null,gStar:S.experiment?.gStar||null,snapshot:locked?deep(locked.after):causalState(),journal:deep(S.causalJournal||[]),protectionAudit:S.experiment?.protectionAudit?deep(S.experiment.protectionAudit):null,answer:S.answer,regime:locked?.regime||trajectory()};let a=[];try{a=JSON.parse(localStorage.getItem(LAB_KEY)||'[]')}catch(e){};const i=a.findIndex(x=>x.runId===rec.runId);if(i>=0){const prev=a[i];if(prev?.final&&prev?.gStar?.after){return prev;}a[i]=rec;}else a.push(rec);localStorage.setItem(LAB_KEY,JSON.stringify(a.slice(-80)));return rec}
+
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function setRecipeStatus(t,cls=''){const el=document.getElementById('recipeStatus');if(el){el.className='card '+cls;el.textContent=t}}
+function scriptedMove(id,target,label){const p=P(id),from={x:p.x,y:p.y},moved=Math.hypot(target.x-p.x,target.y-p.y);p.x=target.x;p.y=target.y;if(moved>.025){S.actions++;S.moves[id]++;S.distanceMoved[id]+=moved;S.experiment.lastExternalInput={t:+((Date.now()-S.startedAt)/1000).toFixed(3),actor:id,label,from:deep(from),to:deep(target),distance:+moved.toFixed(4),recipeId:S.experiment?.recipeId||null};observe('RECIPE_MOVE',{id,label,d:+moved.toFixed(3),from,to:target,recipeId:S.experiment?.recipeId||null});}return moved}
+async function waitFor(pred,timeout=5000,step=25){const t0=Date.now();while(!pred()){if(Date.now()-t0>timeout)throw new Error('Délai dépassé');await wait(step)}return true}
+async function prepareAutoRun(recipe){reset();entered=true;document.getElementById('veil').classList.add('gone');S.phaseTime=0;S.experiment.condition=recipe.condition;S.experiment.recipeId=recipe.id;S.experiment.recipeSpec=deep(recipe);S._labFreeze=false;S._labTestActive=true;causalLog('RECIPE_START',{recipeId:recipe.id,spec:deep(recipe)});labStore(false);renderLab();}
+function protectionProbe(label){const c=P('C'),ci=init.p[2],dc0=Math.hypot(c.x-ci.x,c.y-ci.y);return{label,t:+((Date.now()-S.startedAt)/1000).toFixed(3),protected:!!S.protected,transfer:+S.transfer.toFixed(4),dD:+S.dD.toFixed(4),dC:+S.dC.toFixed(4),omegaC:+S.omegaC.toFixed(4),distanceToOrigin:+dc0.toFixed(5),cx:+c.x.toFixed(4),cy:+c.y.toFixed(4),qAB:+qAB().toFixed(4),history:S.history,episodes:S.episodes,actions:S.actions,restores:S.restores,_restored:!!S._restored,lastExternalInput:S.experiment?.lastExternalInput?deep(S.experiment.lastExternalInput):null};}
+function recordProtectionActivation(dc0){if(!S.experiment)return;const before=protectionProbe('ACTIVATION_BEFORE');const predicate={historyGE3:S.history>=3,notProtected:!S.protected,distanceGT022:dc0>.22,expression:'history >= 3 && !protected && distance(C,origine) > 0.22'};const rec={kind:'PROTECTION_ACTIVATION',t:+((Date.now()-S.startedAt)/1000).toFixed(3),source:'dynamique native',mechanism:'seuil de distance de C après histoire',predicate,values:{history:S.history,protectedBefore:!!S.protected,distanceToOrigin:+dc0.toFixed(5),threshold:.22,qAB:+qAB().toFixed(4),transferBefore:+S.transfer.toFixed(4),dDBefore:+S.dD.toFixed(4),dCBefore:+S.dC.toFixed(4),omegaCBefore:+S.omegaC.toFixed(4)},responsibleInput:S.experiment.lastExternalInput?deep(S.experiment.lastExternalInput):null,before};if(!S.experiment.protectionAudit)S.experiment.protectionAudit={steps:[],activations:[]};S.experiment.protectionAudit.activations.push(rec);causalLog('PROTECTION_ACTIVATION_PROVENANCE',deep(rec));}
+function pDiagStep(code,label){if(!S.experiment.protectionAudit)S.experiment.protectionAudit={steps:[],activations:[]};const probe=protectionProbe(label);const row={code,label,...probe};S.experiment.protectionAudit.steps.push(row);causalLog('PROTECTION_DIAG_STEP',deep(row));renderCDiagnostic();return row;}
+function cRestorePredicate(){const c=P('C'),ci=init.p[2],dc0=Math.hypot(c.x-ci.x,c.y-ci.y);const core={historyOK:S.history>=3,distanceOK:dc0<.035,actionsOK:S.actions>4,restoredClear:!S._restored};const restorationObserved=S.restores>=1&&!!S._restored;const genuineProtection=!!S.protected||S.transfer>.10;return{history:S.history,episodes:S.episodes,actions:S.actions,restores:S.restores,protected:S.protected,transfer:+S.transfer.toFixed(4),genuineProtection,restorationObserved,episode:S.episode,labFreeze:S._labFreeze,entered,ended:S.ended,cx:+c.x.toFixed(4),cy:+c.y.toFixed(4),originX:ci.x,originY:ci.y,distanceToOrigin:+dc0.toFixed(5),threshold:.035,_restored:!!S._restored,...core,nativePredicate:core.historyOK&&core.distanceOK&&core.actionsOK&&core.restoredClear,updateCanRun:!!entered&&!S.ended&&!S._labFreeze,cQualified:!!S.experiment?.cQualified}}
+function cDiagReason(p){const f=[];if(!p.historyOK)f.push('history < 3');if(!p.distanceOK&&!p.restorationObserved)f.push('distance C→origine ≥ 0.035');if(!p.actionsOK)f.push('actions ≤ 4');if(!p.restoredClear&&!p.restorationObserved)f.push('_restored déjà actif avant nouvel événement');if(!p.updateCanRun&&!p.cQualified)f.push(p.labFreeze?'boucle moteur gelée (_labFreeze=true)':p.ended?'run terminé (ended=true)':'monde non entré');if(p.restorationObserved)f.push('restauration native observée : témoin positif');if(p.genuineProtection)f.push('protection/transfert véritable actif : invalide C indépendamment de _restored');return f.length?f.join(' · '):'aucune condition bloquante visible'}
+function cDiagStep(code,label,extra={}){if(!S.experiment.cDiagnostic)S.experiment.cDiagnostic=[];const pred=cRestorePredicate();const row={code,label,t:+((Date.now()-S.startedAt)/1000).toFixed(3),predicate:pred,reason:cDiagReason(pred),state:causalState(),...extra};S.experiment.cDiagnostic.push(row);causalLog('C_DIAG_STEP',deep(row));renderCDiagnostic();return row}
+function renderCDiagnostic(){const el=document.getElementById('cDiagnostic');if(!el)return;const m=mirrorLoad();if(!m){el.innerHTML='<b>Contrôle miroir B/C de protected</b><br><span class="muted">Non exécuté. Utilisez « Contrôle miroir B/C — 1 paire ». Aucun retour de C, aucune normalisation S*, aucun g*.</span>';return}const arms=[['B',m.B],['C',m.C]];let h='<b>Contrôle miroir B/C — arrêt après épisode #3</b><br>';for(const [name,a] of arms){h+=`<div class="card" style="margin-top:10px"><b>Bras ${name} · ${a?.activation?'protected ACTIVÉ':'protected NON activé'}</b><br>`;for(const p of (a?.steps||[])){h+=`<span class="small">${p.code} · prot ${p.protected?'OUI':'NON'} · Hist ${p.history} · ep ${p.episodes} · dC ${fmt(p.dC)} · dD ${fmt(p.dD)} · ΩC ${fmt(p.omegaC)} · transf ${fmt(p.transfer)} · dist ${Number.isFinite(p.distanceToOrigin)?p.distanceToOrigin.toFixed(5):'—'} · qAB ${fmt(p.qAB)}</span><br>`}const x=a?.activationSummary;if(x){h+=`<span class="pass">CAUSE : ${x.mechanism}</span><br><code>${x.predicate}</code><br><span class="muted">franchissement : Hist ${x.history} · dist ${Number(x.distanceToOrigin).toFixed(5)} · qAB ${fmt(x.qAB)} · transf ${fmt(x.transfer)} · dD ${fmt(x.dD)} · dC ${fmt(x.dC)} · ΩC ${fmt(x.omegaC)} · source externe ${x.responsibleActor||'—'} / ${x.responsibleGesture||'—'}</span>`}h+='</div>'}const c=m.comparison||{};h+='<div class="card" style="margin-top:12px"><b>Comparaison miroir</b><br>';h+=`Activation dans les deux bras : <b class="${c.bothActivated?'pass':'fail'}">${c.bothActivated?'OUI':'NON'}</b><br>`;h+=`Même prédicat natif : <b class="${c.samePredicate?'pass':'fail'}">${c.samePredicate?'OUI':'NON'}</b><br>`;h+=`Même source/mécanisme : <b class="${c.sameSource?'pass':'fail'}">${c.sameSource?'OUI':'NON'}</b><br>`;h+=`Même porte historique history=3 : <b class="${c.sameHistoricalGate?'pass':'fail'}">${c.sameHistoricalGate?'OUI':'NON'}</b><br>`;h+=`Conclusion instrumentale : <b class="${c.mirrorMechanism?'pass':'fail'}">${c.mirrorMechanism?'ACTIVATION PROTECTED COMMUNE À B ET C AVANT RESTAURATION':'DIFFÉRENCE À AUDITER'}</b>`;if(c.deltas)h+=`<br><span class="small">Δ(C−B) au franchissement : dist ${fmt(c.deltas.distance)} · qAB ${fmt(c.deltas.qAB)} · transf ${fmt(c.deltas.transfer)} · dD ${fmt(c.deltas.dD)} · dC ${fmt(c.deltas.dC)} · ΩC ${fmt(c.deltas.omegaC)} · t ${fmt(c.deltas.t)} s</span>`;h+='</div>';el.innerHTML=h}
+
+function mirrorLoad(){try{return JSON.parse(localStorage.getItem(MIRROR_KEY)||'null')}catch(e){return null}}
+function mirrorStore(data){try{localStorage.setItem(MIRROR_KEY,JSON.stringify(data));}catch(e){}return data}
+function mirrorActivationSummary(rec){if(!rec)return null;return{
+ source:rec.source||null,mechanism:rec.mechanism||null,predicate:rec.predicate?.expression||null,
+ history:rec.values?.history??null,distanceToOrigin:rec.values?.distanceToOrigin??null,qAB:rec.values?.qAB??null,
+ transfer:rec.values?.transferBefore??null,dD:rec.values?.dDBefore??null,dC:rec.values?.dCBefore??null,omegaC:rec.values?.omegaCBefore??null,
+ t:rec.t??null,responsibleActor:rec.responsibleInput?.actor||null,responsibleGesture:rec.responsibleInput?.label||null
+}}
+async function runMirrorArm(condition){
+ const r=RECIPES.B_STD_001;
+ await prepareAutoRun({...r,id:condition+'_MIRROR_001',condition});
+ S.experiment.recipeId=condition+'_MIRROR_001';
+ S.experiment.recipeSpec={...deep(r),id:condition+'_MIRROR_001',condition,mirror:true};
+ S.experiment.mirrorAuditMode=true;
+ S.experiment.protectionAudit={steps:[],activations:[]};
+ S.experiment.lastExternalInput=null;
+ const steps=[];
+ const snap=(code)=>{const x=protectionProbe(code);steps.push({code,...x});causalLog('MIRROR_STEP',deep({arm:condition,...x}));return x};
+ snap('P0');
+ for(let i=1;i<=3;i++){
+   setRecipeStatus('Miroir '+condition+' — épisode '+i+'/3 : tension');
+   scriptedMove('A',r.active,condition+'_MIRROR_ACTIVE_'+i);
+   await waitFor(()=>S.episode||S.protected,1200);
+   await wait(r.activeMs);
+   setRecipeStatus('Miroir '+condition+' — épisode '+i+'/3 : relâchement');
+   scriptedMove('A',r.rest,condition+'_MIRROR_RELEASE_'+i);
+   await waitFor(()=>!S.episode,1200);
+   await wait(r.restMs);
+   snap('P'+i);
+ }
+ S._labFreeze=true;S._labTestActive=false;
+ const activation=(S.experiment.protectionAudit?.activations||[])[0]||null;
+ return{condition,recipeId:condition+'_MIRROR_001',steps:deep(steps),activation:!!activation,activationSummary:mirrorActivationSummary(activation),final:causalState()};
+}
+async function executeMirrorBC(){
+ if(autoBusy)return;autoBusy=true;
+ try{
+   setRecipeStatus('Contrôle miroir B/C — bras B…');renderLab();
+   const B=await runMirrorArm('B');
+   setRecipeStatus('Contrôle miroir B/C — bras C…');renderLab();
+   const C=await runMirrorArm('C');
+   const bx=B.activationSummary,cx=C.activationSummary;
+   const both=!!bx&&!!cx;
+   const samePredicate=both&&bx.predicate===cx.predicate;
+   const sameSource=both&&bx.source===cx.source&&bx.mechanism===cx.mechanism;
+   const sameHistoricalGate=both&&bx.history===3&&cx.history===3;
+   const deltas=both?{distance:+((cx.distanceToOrigin||0)-(bx.distanceToOrigin||0)).toFixed(5),qAB:+((cx.qAB||0)-(bx.qAB||0)).toFixed(4),transfer:+((cx.transfer||0)-(bx.transfer||0)).toFixed(4),dD:+((cx.dD||0)-(bx.dD||0)).toFixed(4),dC:+((cx.dC||0)-(bx.dC||0)).toFixed(4),omegaC:+((cx.omegaC||0)-(bx.omegaC||0)).toFixed(4),t:+((cx.t||0)-(bx.t||0)).toFixed(3)}:null;
+   const comparison={bothActivated:both,samePredicate,sameSource,sameHistoricalGate,mirrorMechanism:both&&samePredicate&&sameSource&&sameHistoricalGate,deltas};
+   const result={version:V016,completedAt:new Date().toISOString(),B,C,comparison};
+   mirrorStore(result);
+   setRecipeStatus(comparison.mirrorMechanism?'Contrôle miroir terminé — activation commune confirmée':'Contrôle miroir terminé — différence à auditer',comparison.mirrorMechanism?'pass':'fail');
+   renderLab();renderCDiagnostic();
+   return true;
+ }catch(e){
+   setRecipeStatus('Contrôle miroir B/C — ERREUR : '+e.message,'fail');
+   try{mirrorStore({version:V016,completedAt:new Date().toISOString(),error:String(e),B:null,C:null,comparison:{mirrorMechanism:false}})}catch(_){}
+   renderLab();renderCDiagnostic();return false;
+ }finally{autoBusy=false;renderLab()}
+}
+
+async function executeDiagnosticC(){if(autoBusy)return;autoBusy=true;const r=RECIPES.C_STD_001;try{setRecipeStatus('C_DIAG_002 — préparation…');await prepareAutoRun(r);S.experiment.recipeId='C_DIAG_002';S.experiment.recipeSpec={...deep(r),diagnosticOnly:true,audit:'provenance-protection'};S.experiment.cDiagnostic=[];S.experiment.protectionAudit={steps:[],activations:[]};S.experiment.lastExternalInput=null;pDiagStep('P0','état initial');for(let i=1;i<=3;i++){setRecipeStatus('C_DIAG_002 — épisode '+i+'/3 : tension');scriptedMove('A',r.active,'C_DIAG2_ACTIVE_'+i);await waitFor(()=>S.episode||S.protected,1200);await wait(r.activeMs);setRecipeStatus('C_DIAG_002 — épisode '+i+'/3 : relâchement');scriptedMove('A',r.rest,'C_DIAG2_RELEASE_'+i);await waitFor(()=>!S.episode||S.protected,1200);await wait(r.restMs);pDiagStep('P'+i,'après épisode A–B #'+i);}setRecipeStatus('C_DIAG_002 — retour de C à son origine');scriptedMove('C',r.restoreC,'C_DIAG2_RESTORE_ORIGIN');pDiagStep('P4','C replacée à son origine');await wait(180);pDiagStep('P5','après fenêtre de restauration native');S._labFreeze=true;S._labTestActive=false;const acts=S.experiment.protectionAudit?.activations||[];setRecipeStatus('C_DIAG_002 terminé — '+acts.length+' activation(s) de protection tracée(s)',acts.length?'pass':'fail');labStore(false);renderLab();renderCDiagnostic();return true}catch(e){if(S.experiment?.protectionAudit)pDiagStep('ERR','diagnostic interrompu : '+e.message);S._labFreeze=true;S._labTestActive=false;setRecipeStatus('C_DIAG_002 — ERREUR : '+e.message,'fail');renderLab();renderCDiagnostic();return false}finally{autoBusy=false}}
+
+function cDerivedReason(){
+ if(S.protected)return 'protected=true ⇒ D';
+ if(S.transfer>.05)return 'transfer>0.05 ⇒ D';
+ if(S.restores>0)return 'restores>0 ⇒ C';
+ if(S.episodes>=3)return 'episodes≥3 ⇒ B';
+ return 'sinon ⇒ A';
+}
+function cTraceProbe(code,label){
+ const c=P('C'),ci=init.p[2],state=causalState();
+ const row={code,label,t:state.t,derived:derivedHistory(),reason:cDerivedReason(),protected:!!S.protected,transfer:+S.transfer.toFixed(4),dC:+S.dC.toFixed(4),dD:+S.dD.toFixed(4),omegaC:+S.omegaC.toFixed(4),history:S.history,episodes:S.episodes,restores:S.restores,rigid:S.rigid,distanceToOrigin:+Math.hypot(c.x-ci.x,c.y-ci.y).toFixed(5),qAB:+qAB().toFixed(4),cQualified:!!S.experiment?.cQualified,normalized:!!S.experiment?.normalized,lastExternalInput:S.experiment?.lastExternalInput?deep(S.experiment.lastExternalInput):null};
+ if(!S.experiment.cTransitionTrace)S.experiment.cTransitionTrace=[];
+ S.experiment.cTransitionTrace.push(row);causalLog('C_TRANSITION_TRACE',deep(row));renderCTransitionTrace();return row;
+}
+function cTraceLoad(){try{return JSON.parse(localStorage.getItem(CTRACE_KEY)||'null')}catch(e){return null}}
+function cTraceStore(payload){try{localStorage.setItem(CTRACE_KEY,JSON.stringify(payload))}catch(e){}}
+function renderCTransitionTrace(){
+ const el=document.getElementById('cTransitionTrace');if(!el)return;
+ const live=S.experiment?.cTransitionTrace?.length?{version:V016,runId:S.runId,steps:S.experiment.cTransitionTrace,protectionAudit:S.experiment?.protectionAudit||null}:null;
+ const tr=live||cTraceLoad();if(!tr?.steps?.length){el.innerHTML='<b>Trace C→D</b><br><span class="muted">Non exécutée. Le trace s’arrête après normalisation S* et n’applique pas g*.</span>';return}
+ const steps=tr.steps;let firstD=null,prev=null;for(const x of steps){if(x.derived==='D'&&prev?.derived!=='D'){firstD=x;break}prev=x}
+ let h='<b>Trace C→D — chronologie causale</b><br>';
+ h+=`Run : <b>${tr.runId||'—'}</b><br>`;
+ for(const x of steps){h+=`<div style="margin-top:8px"><b>${x.code}</b> · ${x.label}<br><span class="${x.derived==='D'?'warn':'muted'}">dérivé ${x.derived} · ${x.reason}</span><br><span class="muted">t ${fmt(x.t)} s · Hist ${x.history} · ep ${x.episodes} · protected ${x.protected?'OUI':'NON'} · restores ${x.restores} · transfer ${fmt(x.transfer)} · dC ${fmt(x.dC)} · dD ${fmt(x.dD)} · ΩC ${fmt(x.omegaC)} · distC ${x.distanceToOrigin.toFixed(5)} · qAB ${fmt(x.qAB)}</span></div>`}
+ if(firstD){h+=`<hr style="border:0;border-top:1px solid #263044;margin:10px 0"><b>PREMIÈRE TRANSITION VERS D</b><br><span class="pass">${firstD.code} · ${firstD.label}</span><br>Cause lue dans le classificateur : <b>${firstD.reason}</b><br>`;const pa=tr.protectionAudit?.activations?.[0];if(pa)h+=`Activation native de protected : <b>${pa.mechanism}</b><br>Prédicat : <code>${pa.predicate?.expression||'—'}</code><br>Au franchissement : history ${pa.values?.history} · dist ${pa.values?.distanceToOrigin} &gt; ${pa.values?.threshold} · transfer ${fmt(pa.values?.transferBefore)} · dD ${fmt(pa.values?.dDBefore)}.`}
+ else h+='<br><b class="warn">Aucune transition vers D observée dans cette trace.</b>';
+ const rest=steps.find(x=>x.code==='T5'),norm=steps.find(x=>x.code==='T7');if(rest&&norm)h+=`<hr style="border:0;border-top:1px solid #263044;margin:10px 0"><b>Lecture instrumentale</b><br>Après restauration : dérivé <b>${rest.derived}</b> (${rest.reason}). Après S* : dérivé <b>${norm.derived}</b> (${norm.reason}).<br><span class="muted">Cette conclusion décrit uniquement le classificateur et l’état du moteur ; aucune variable causale n’a été modifiée.</span>`;
+ el.innerHTML=h;
+}
+async function executeCTransitionTrace(){
+ if(autoBusy)return;if(!mirrorSupportsSharedProtected()){alert('Contrôle miroir B/C absent ou non concluant. Exécutez d’abord le contrôle miroir.');return}
+ autoBusy=true;const r=RECIPES.C_STD_001;try{
+  setRecipeStatus('C_TRACE_001 — préparation…');await prepareAutoRun(r);S.experiment.recipeId='C_TRACE_001';S.experiment.recipeSpec={...deep(r),analysisOnly:true,noGStar:true};S.experiment.cTransitionTrace=[];S.experiment.protectionAudit={steps:[],activations:[]};S.experiment.lastExternalInput=null;cTraceProbe('T0','état initial');
+  for(let i=1;i<=3;i++){
+   scriptedMove('A',r.active,'C_TRACE_ACTIVE_'+i);await waitFor(()=>S.episode||S.protected,1200);await wait(r.activeMs);cTraceProbe('T'+(i*2-1),'épisode A–B #'+i+' actif');
+   scriptedMove('A',r.rest,'C_TRACE_RELEASE_'+i);await waitFor(()=>!S.episode,1200);await wait(r.restMs);cTraceProbe('T'+(i*2),'épisode A–B #'+i+' relâché');
+  }
+  if(!(S.episodes>=3&&S.history>=3&&S.protected))throw new Error('Baseline B/C commune non atteinte après épisode #3.');
+  S.experiment.cSharedBaseline={capturedAt:Date.now(),activationSource:'mirror-common-native-threshold',protected:!!S.protected,history:S.history,episodes:S.episodes,transfer:+S.transfer.toFixed(4),dC:+S.dC.toFixed(4),dD:+S.dD.toFixed(4),omegaC:+S.omegaC.toFixed(4),state:causalState()};causalLog('C_SHARED_PROTECTED_BASELINE',{baseline:deep(S.experiment.cSharedBaseline)});
+  cTraceProbe('T4','baseline B/C commune capturée');scriptedMove('C',r.restoreC,'C_TRACE_RESTORE_ORIGIN');await waitFor(()=>!!S.experiment?.cQualified,1800);cTraceProbe('T5','restauration native + C_QUALIFIED');
+  cTraceProbe('T6','juste avant normalisation S*');normalizeGeometry();await wait(100);cTraceProbe('T7','après normalisation S*');
+  S._labFreeze=true;S._labTestActive=false;const payload={version:V016,runId:S.runId,completedAt:new Date().toISOString(),steps:deep(S.experiment.cTransitionTrace),protectionAudit:deep(S.experiment.protectionAudit||null),conclusion:{firstD:(()=>{let p=null;for(const x of S.experiment.cTransitionTrace){if(x.derived==='D'&&p?.derived!=='D')return deep(x);p=x}return null})(),noGStar:true,causalEngineModified:false}};cTraceStore(payload);setRecipeStatus('C_TRACE_001 — trace terminée · aucun g* appliqué','pass');renderLab();renderCTransitionTrace();return true;
+ }catch(e){S._labFreeze=true;S._labTestActive=false;setRecipeStatus('C_TRACE_001 — ERREUR : '+e.message,'fail');causalLog('C_TRACE_ERROR',{error:String(e)});renderLab();renderCTransitionTrace();return false}finally{autoBusy=false}
+}
+
+
+let AUTOPSY_MEM=null;
+function autopsyLoad(){return AUTOPSY_MEM}
+function autopsyStore(x){AUTOPSY_MEM=deep(x);return AUTOPSY_MEM}
+function autopsyPoint(code,label){const c=causalState();return{code,label,t:c.t,dC:c.dC,dD:c.dD,omegaC:c.omegaC,transfer:c.transfer,history:c.history,episodes:c.episodes,restores:c.restores,protected:c.protected,derived:c.derived,distC:+dist(P('C'),init.p.find(x=>x.id==='C')).toFixed(5),qAB:c.qAB}}
+function renderAutopsyCD(){const el=document.getElementById('autopsyCD');if(!el)return;const a=autopsyLoad();if(!a?.C?.steps||!a?.D?.steps){el.innerHTML='<b>Autopsie C↔D</b><br><span class="muted">Non exécutée. Un bras C et un bras D sont reconstruits séparément. Aucun g* n’est appliqué et aucun run n’est ajouté au corpus.</span>';return}
+ const f=v=>typeof v==='number'?v.toFixed(3):'—';
+ const row=x=>`${x.code} · ${x.label}<br><span class="muted">t ${f(x.t)} · dD ${f(x.dD)} · transfer ${f(x.transfer)} · dC ${f(x.dC)} · ΩC ${f(x.omegaC)} · restores ${x.restores} · protected ${x.protected?'OUI':'NON'} · distC ${x.distC.toFixed(5)}</span>`;
+ let h='<b>Autopsie C↔D — provenance de dD / transfer</b><br>';
+ h+='<div style="margin-top:10px"><b>Bras C — restauration</b></div>';for(const x of a.C.steps)h+='<div style="margin-top:7px">'+row(x)+'</div>';
+ h+='<div style="margin-top:12px"><b>Bras D — sans restauration</b></div>';for(const x of a.D.steps)h+='<div style="margin-top:7px">'+row(x)+'</div>';
+ const q=a.analysis||{};h+='<hr style="border:0;border-top:1px solid #263044;margin:12px 0"><b>Décomposition du résidu</b><br>';
+ h+=`Durée baseline→restauration C qualifiée : <b>${f(q.restoreLatencyMs)} ms</b><br>`;
+ h+=`Effet C pendant cette fenêtre : ΔdD <b>${f(q.cWindow?.dD)}</b> · Δtransfer <b>${f(q.cWindow?.transfer)}</b><br>`;
+ h+=`Témoin D pendant la même durée sans restauration : ΔdD <b>${f(q.dMatchedWindow?.dD)}</b> · Δtransfer <b>${f(q.dMatchedWindow?.transfer)}</b><br>`;
+ h+=`Délai supplémentaire D jusqu’à transfer&gt;.10 : <b>${f(q.dExtraLatencyMs)} ms</b> · ΔdD <b>${f(q.dExtraWindow?.dD)}</b> · Δtransfer <b>${f(q.dExtraWindow?.transfer)}</b><br>`;
+ h+=`Écart final avant S* C−D : dD <b>${f(q.finalGap?.dD)}</b> · transfer <b>${f(q.finalGap?.transfer)}</b><br>`;
+ h+='<hr style="border:0;border-top:1px solid #263044;margin:12px 0"><b>Verdict instrumental</b><br>';
+ const cls=q.verdict==='ARTEFACT_TEMPOREL'?'pass':q.verdict==='EFFET_RESTAURATION'?'warn':'warn';
+ h+=`<span class="${cls}">${q.label||'INDETERMINE'}</span><br><span class="muted">${q.explanation||''}</span>`;
+ if(a.sandbox){h+=`<hr><b>Sandbox</b><br>Corpus avant : ${a.sandbox.totalRunsBefore??'—'} run(s) · après : ${a.sandbox.totalRunsAfter??'—'} · Δ corpus : <b>${a.sandbox.corpusChangedDuringRun?'OUI':'NON'}</b> · Δ localStorage : <b>${a.sandbox.localStorageChanged?'OUI':'NON'}</b> · Δ état vivant S : <b>${a.sandbox.liveStateChanged?'OUI':'NON'}</b><br><span class="muted">Critère de validité : les trois deltas doivent rester NON.</span>`;}
+ el.innerHTML=h;
+}
+function autopsyStatus(title,detail='',cls=''){
+ const el=document.getElementById('autopsyCD');
+ if(!el)return;
+ el.className='card '+cls;
+ el.innerHTML='<b>'+title+'</b>'+(detail?'<br><span class="muted">'+detail+'</span>':'');
+}
+function diffMini(a,b){return{dD:+(b.dD-a.dD).toFixed(4),transfer:+(b.transfer-a.transfer).toFixed(4),dC:+(b.dC-a.dC).toFixed(4),omegaC:+(b.omegaC-a.omegaC).toFixed(4)}}
+async function prepareAutopsyArm(cond){
+ const r=cond==='C'?RECIPES.C_STD_001:RECIPES.D_STD_001;
+ // Sandbox stricte : reconstruire un monde temporaire sans prepareAutoRun(),
+ // donc sans labStore() et sans écriture dans le corpus expérimental.
+ reset();
+ entered=true;
+ document.getElementById('veil').classList.add('gone');
+ S.phaseTime=0;
+ S.experiment.condition=cond;
+ S.experiment.recipeId=cond+'_AUTOPSY_001';
+ S.experiment.recipeSpec={analysisOnly:true,autopsy:true,condition:cond,sourceRecipe:r.id};
+ S.experiment.protectionAudit={steps:[],activations:[]};
+ S.experiment.lastExternalInput=null;
+ S._labFreeze=false;
+ S._labTestActive=true;
+ causalLog('AUTOPSY_ARM_START',{condition:cond,sourceRecipe:r.id,persisted:false});
+ return r;
+}
+async function buildCommonThreeEpisodes(r,prefix){const steps=[autopsyPoint('P0','état initial')];for(let i=1;i<=3;i++){scriptedMove('A',r.active,prefix+'_ACTIVE_'+i);await waitFor(()=>S.episode||S.protected,1200);await wait(r.activeMs);steps.push(autopsyPoint('P'+(i*2-1),'épisode #'+i+' actif'));scriptedMove('A',r.rest,prefix+'_RELEASE_'+i);await waitFor(()=>!S.episode,1200);await wait(r.restMs);steps.push(autopsyPoint('P'+(i*2),'épisode #'+i+' relâché'));}await waitFor(()=>S.protected,1200);steps.push(autopsyPoint('BASE','baseline protected commune'));return steps}
+async function executeAutopsyCD_CORE(){
+ if(autoBusy){autopsyStatus('Autopsie C↔D — déjà en cours','Attendez la fin du contrôle en cours.','');return false}
+ autopsyStatus('Autopsie C↔D — démarrage…','Vérification de la preuve miroir B/C puis reconstruction des deux bras.','');
+ if(!mirrorSupportsSharedProtected()){
+   autopsyStatus('Autopsie C↔D — précondition manquante','Le contrôle miroir B/C n’est pas disponible ou n’est pas concluant dans ce fichier. Lancez « Contrôle miroir B/C — 1 paire », puis relancez l’autopsie.','fail');
+   return false;
+ }
+ autoBusy=true;
+ const btn=document.getElementById('autopsyCD1'); if(btn)btn.disabled=true;
+ try{
+ setRecipeStatus('AUTOPSIE C↔D — bras C…');autopsyStatus('Autopsie C↔D — bras C','Reconstruction de la baseline commune puis restauration native…');let r=await prepareAutopsyArm('C');let cSteps=await buildCommonThreeEpisodes(r,'C_AUT');const cBase=cSteps[cSteps.length-1];S.experiment.cSharedBaseline={capturedAt:Date.now(),activationSource:'mirror-common-native-threshold',protected:!!S.protected,history:S.history,episodes:S.episodes,transfer:+S.transfer.toFixed(4),dC:+S.dC.toFixed(4),dD:+S.dD.toFixed(4),omegaC:+S.omegaC.toFixed(4),state:causalState()};const tRestore0=performance.now();scriptedMove('C',r.restoreC,'C_AUT_RESTORE_ORIGIN');await waitFor(()=>!!S.experiment?.cQualified,1800,10);const restoreLatency=Math.max(0,performance.now()-tRestore0);const cAfter=autopsyPoint('C_RESTORE','restauration native qualifiée');cSteps.push(cAfter);const cPreS=autopsyPoint('C_PRE_S','juste avant S*');cSteps.push(cPreS);normalizeGeometry();await wait(80);cSteps.push(autopsyPoint('C_S','après S*'));S._labFreeze=true;S._labTestActive=false;
+ setRecipeStatus('AUTOPSIE C↔D — bras D témoin temporel…');autopsyStatus('Autopsie C↔D — bras D','Reconstruction sans restauration, durée témoin appariée puis attente du seuil D…');r=await prepareAutopsyArm('D');let dSteps=await buildCommonThreeEpisodes(r,'D_AUT');const dBase=dSteps[dSteps.length-1];const dMatch0=performance.now();await wait(restoreLatency);const dMatched=autopsyPoint('D_MATCH','même durée que restauration C, sans intervention');dSteps.push(dMatched);const dExtra0=performance.now();await waitFor(()=>qualifies('D'),3500,10);const dExtraLatency=Math.max(0,performance.now()-dExtra0);const dQualified=autopsyPoint('D_QUAL','seuil D natif transfer>.10 atteint');dSteps.push(dQualified);if(S.restores!==0||S._restored)throw new Error('Autopsie D invalide : restauration apparue avant S*.');normalizeGeometry();await wait(80);dSteps.push(autopsyPoint('D_S','après S*'));S._labFreeze=true;S._labTestActive=false;
+ const cWin=diffMini(cBase,cAfter),dWin=diffMini(dBase,dMatched),dExtra=diffMini(dMatched,dQualified),gap={dD:+(cPreS.dD-dQualified.dD).toFixed(4),transfer:+(cPreS.transfer-dQualified.transfer).toFixed(4)};
+ const eps=.012;const restorationSpecific=Math.abs(cWin.dD-dWin.dD)>eps||Math.abs(cWin.transfer-dWin.transfer)>eps;const extraExplains=Math.abs(dExtra.dD)>=Math.abs(gap.dD)*.65||Math.abs(dExtra.transfer)>=Math.abs(gap.transfer)*.65;
+ let verdict,label,explanation;if(!restorationSpecific&&extraExplains){verdict='ARTEFACT_TEMPOREL';label='RÉSIDU PRINCIPALEMENT TEMPOREL / PROTOCOLE D';explanation='À durée appariée, la restauration C ne produit pas d’écart propre substantiel sur dD/transfer. L’écart final apparaît surtout pendant l’attente supplémentaire imposée à D pour atteindre transfer > .10.'}else if(restorationSpecific){verdict='EFFET_RESTAURATION';label='EFFET PROPRE DE RESTAURATION DÉTECTÉ';explanation='À durée appariée, le bras C diverge déjà du témoin D sans restauration sur dD/transfer. Le résidu ne peut donc pas être expliqué uniquement par le temps passé dans protected.'}else{verdict='INDETERMINE';label='RÉSULTAT MIXTE — NE PAS TRANCHER';explanation='La décomposition ne permet pas d’attribuer proprement le résidu à la restauration ni au seul délai D.'}
+ const payload={version:V016,completedAt:new Date().toISOString(),C:{steps:cSteps,baseline:cBase,preS:cPreS},D:{steps:dSteps,baseline:dBase,matched:dMatched,qualified:dQualified},analysis:{restoreLatencyMs:+restoreLatency.toFixed(1),dExtraLatencyMs:+dExtraLatency.toFixed(1),cWindow:cWin,dMatchedWindow:dWin,dExtraWindow:dExtra,finalGap:gap,restorationSpecific,extraExplains,verdict,label,explanation},causalEngineModified:false,gStarApplied:false,corpusPolluted:false};autopsyStore(payload);setRecipeStatus('AUTOPSIE C↔D — terminée · lire section 4','pass');renderLab();renderAutopsyCD();return true;
+ }catch(e){
+ S._labFreeze=true;S._labTestActive=false;
+ setRecipeStatus('AUTOPSIE C↔D — ERREUR : '+e.message,'fail');
+ autopsyStatus('Autopsie C↔D — ERREUR',String(e&&e.message?e.message:e),'fail');
+ causalLog('AUTOPSY_CD_ERROR',{error:String(e&&e.stack?e.stack:e)});
+ return false;
+ }finally{
+   autoBusy=false;
+   const b=document.getElementById('autopsyCD1'); if(b)b.disabled=false;
+   renderLab();
+ }}
+
+
+// v0.1.21.5 — autopsie analytique pure.
+// IMPORTANT : cette fonction ne touche jamais à S, entered, autoBusy, aux recettes vivantes
+// ni à localStorage. Elle recopie seulement les équations pertinentes du moteur dans deux
+// objets analytiques C′/D′ pour tester la provenance de dD/transfer.
+function pureStorageSnapshot(){
+  const o={};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i); o[k]=localStorage.getItem(k);
+  }
+  return JSON.stringify(Object.keys(o).sort().reduce((a,k)=>(a[k]=o[k],a),{}));
+}
+function pureInitArm(){
+  return {
+    t:0, dC:5, dD:.2, omegaC:.45, old:1, transfer:0,
+    history:0, episodes:0, restores:0, rigid:0, protected:false,
+    actions:0, episode:false, restored:false,
+    A:{x:.27,y:.32}, B:{x:.67,y:.30}, C:{x:.49,y:.62}, D:{x:.73,y:.67},
+    C0:{x:.49,y:.62}, phase:0
+  };
+}
+function pureDist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function pureClamp(v,a=0,b=1){return Math.max(a,Math.min(b,v))}
+function pureQAB(x){const d=pureDist(x.A,x.B),d0=.40;return pureClamp((Math.abs(d-d0)/d0-.15)*1.8,0,1)}
+function pureDerived(x){if(x.protected||x.transfer>.05)return'D';if(x.restores>0)return'C';if(x.episodes>=3)return'B';return'A'}
+function purePoint(x,code,label){return {code,label,t:+x.t.toFixed(3),dC:+x.dC.toFixed(4),dD:+x.dD.toFixed(4),omegaC:+x.omegaC.toFixed(4),transfer:+x.transfer.toFixed(4),history:x.history,episodes:x.episodes,restores:x.restores,protected:x.protected,derived:pureDerived(x),distC:+pureDist(x.C,x.C0).toFixed(5),qAB:+pureQAB(x).toFixed(4)}}
+function pureStep(x,dt){
+  x.t+=dt;
+  const q=pureQAB(x);
+  if(q>.10&&!x.episode){x.episode=true;x.episodes++;x.history++;}
+  if(q<.035&&x.episode)x.episode=false;
+  if(q>.035){
+    const load=1.25*q*dt*.35*x.old;
+    if(!x.protected){
+      x.dC=pureClamp(x.dC+load,0,20);
+      x.omegaC=pureClamp(x.omegaC-.025*q*dt*.35,0,1);
+      const mx=(x.A.x+x.B.x)/2,my=(x.A.y+x.B.y)/2;
+      x.C.x=x.C.x+(mx-x.C.x)*(.018*q);
+      x.C.y=x.C.y+(my-x.C.y)*(.018*q);
+    }else{
+      x.dD=pureClamp(x.dD+load*.95,0,20);
+      x.transfer+=load*.95;
+    }
+  }
+  const dc0=pureDist(x.C,x.C0);
+  if(x.history>=3&&dc0<.035&&x.actions>4&&!x.restored){
+    x.restored=true;x.restores++;x.rigid++;x.dC=pureClamp(x.dC+.8,0,20);x.omegaC=pureClamp(x.omegaC-.04,0,1);
+  }
+  if(x.history>=3&&!x.protected&&dc0>.22)x.protected=true;
+}
+function pureAdvance(x,seconds,dt=.005){const n=Math.max(1,Math.ceil(seconds/dt)),h=seconds/n;for(let i=0;i<n;i++)pureStep(x,h)}
+function pureMove(x,id,pos){x[id].x=pos.x;x[id].y=pos.y;x.actions++}
+function pureDelta(a,b){return {dD:+(b.dD-a.dD).toFixed(4),transfer:+(b.transfer-a.transfer).toFixed(4),dC:+(b.dC-a.dC).toFixed(4),omegaC:+(b.omegaC-a.omegaC).toFixed(4)}}
+function pureThreeEpisodes(x,steps,prefix){
+  const active={x:.55,y:.30},rest={x:.27,y:.32};
+  steps.push(purePoint(x,'P0','état initial'));
+  for(let i=1;i<=3;i++){
+    pureMove(x,'A',active);pureAdvance(x,.300);steps.push(purePoint(x,'P'+(i*2-1),'épisode #'+i+' actif'));
+    // Pour D_STD, le troisième épisode reste actif jusqu’au seuil D ; cette divergence
+    // est traitée après la baseline commune, donc ici on relâche comme C pour établir
+    // une baseline comparable puis on reconstruit la branche D depuis le snapshot actif.
+    pureMove(x,'A',rest);pureAdvance(x,.350);steps.push(purePoint(x,'P'+(i*2),'épisode #'+i+' relâché'));
+  }
+}
+function pureClone(x){return JSON.parse(JSON.stringify(x))}
+function pureRunAutopsy(){
+  const dt=.005;
+  // Baseline commune : reproduire 2 épisodes complets puis le 3e actif pendant 300 ms.
+  const base=pureInitArm(), common=[];
+  common.push(purePoint(base,'P0','état initial'));
+  for(let i=1;i<=2;i++){
+    pureMove(base,'A',{x:.55,y:.30});pureAdvance(base,.300,dt);common.push(purePoint(base,'P'+(i*2-1),'épisode #'+i+' actif'));
+    pureMove(base,'A',{x:.27,y:.32});pureAdvance(base,.350,dt);common.push(purePoint(base,'P'+(i*2),'épisode #'+i+' relâché'));
+  }
+  pureMove(base,'A',{x:.55,y:.30});pureAdvance(base,.300,dt);common.push(purePoint(base,'P5','épisode #3 actif — baseline commune'));
+  const commonActive=pureClone(base);
+
+  // Bras C : relâchement normal, 350 ms, puis déplacement de C à l’origine.
+  const C=pureClone(commonActive), cSteps=common.map(pureClone);
+  pureMove(C,'A',{x:.27,y:.32});pureAdvance(C,.350,dt);cSteps.push(purePoint(C,'C_RELEASE','épisode #3 relâché'));
+  const cBeforeRestore=purePoint(C,'C_PRE_RESTORE','juste avant restauration');cSteps.push(cBeforeRestore);
+  pureMove(C,'C',{x:.49,y:.62});
+  const restoreStart=purePoint(C,'C_MOVE_ORIGIN','C replacée à son origine');cSteps.push(restoreStart);
+  // une tranche déterministe suffit pour que le prédicat natif de restauration soit lu
+  pureAdvance(C,dt,dt);
+  const cAfterRestore=purePoint(C,'C_RESTORE','restauration native observée');cSteps.push(cAfterRestore);
+  const restoreLatencyMs=dt*1000;
+  const cPreS=purePoint(C,'C_PRE_S','juste avant S*');cSteps.push(cPreS);
+
+  // Bras D témoin 1 : même baseline ACTIVE et même simple durée que la détection de restauration,
+  // sans restauration et en conservant la tension active comme D_STD_001.
+  const Dm=pureClone(commonActive), dSteps=common.map(pureClone);
+  const dMatchStart=purePoint(Dm,'D_MATCH_START','baseline active, sans restauration');dSteps.push(dMatchStart);
+  pureAdvance(Dm,dt,dt);
+  const dMatched=purePoint(Dm,'D_MATCH','même durée que détection C, tension maintenue');dSteps.push(dMatched);
+
+  // Bras D_STD propre : continuer sous la même tension jusqu’au seuil déjà existant transfer>.10.
+  const dExtraStart=purePoint(Dm,'D_EXTRA_START','début exposition active supplémentaire');dSteps.push(dExtraStart);
+  let guard=0;
+  while(Dm.transfer<=.10 && guard++<2000) pureStep(Dm,dt);
+  const dQualified=purePoint(Dm,'D_QUAL','seuil natif D transfer>.10 atteint');dSteps.push(dQualified);
+  const dExtraLatencyMs=(dQualified.t-dExtraStart.t)*1000;
+  // Le protocole D relâche alors A avant S*.
+  pureMove(Dm,'A',{x:.27,y:.32});pureAdvance(Dm,.350,dt);
+  const dPreS=purePoint(Dm,'D_PRE_S','juste avant S*, sans restauration');dSteps.push(dPreS);
+
+  // Témoin temporel strict : même durée CALENDAIRE que C entre baseline active et C_PRE_S,
+  // mais sans restauration. Deux scénarios pour distinguer temps et exposition :
+  // (a) A relâché comme C ; (b) A maintenu actif comme D_STD.
+  const cElapsed=cPreS.t-commonActive.t;
+  const DtimeRest=pureClone(commonActive);
+  pureMove(DtimeRest,'A',{x:.27,y:.32}); pureAdvance(DtimeRest,cElapsed,dt);
+  const dTimeRest=purePoint(DtimeRest,'D_TIME_RELEASED','même durée totale que C, A relâché, aucune restauration');
+  const DtimeActive=pureClone(commonActive);
+  pureAdvance(DtimeActive,cElapsed,dt);
+  const dTimeActive=purePoint(DtimeActive,'D_TIME_ACTIVE','même durée totale que C, A maintenu actif, aucune restauration');
+  dSteps.push(dTimeRest,dTimeActive);
+
+  const cWin=pureDelta(cBeforeRestore,cAfterRestore);
+  const dWin=pureDelta(dMatchStart,dMatched);
+  const dExtra=pureDelta(dExtraStart,dQualified);
+  const finalGap={dD:+(cPreS.dD-dPreS.dD).toFixed(4),transfer:+(cPreS.transfer-dPreS.transfer).toFixed(4)};
+  const sameElapsedReleased={dD:+(cPreS.dD-dTimeRest.dD).toFixed(4),transfer:+(cPreS.transfer-dTimeRest.transfer).toFixed(4)};
+  const sameElapsedActive={dD:+(cPreS.dD-dTimeActive.dD).toFixed(4),transfer:+(cPreS.transfer-dTimeActive.transfer).toFixed(4)};
+
+  // Si restauration n'altère pas dD/transfer et le témoin relâché de même durée reproduit C,
+  // le résidu n'est pas causé par la restauration. S'il faut maintenir qAB pour rejoindre D,
+  // la source est l'exposition active supplémentaire, pas le temps nu.
+  const eps=.003;
+  const restorationDirect=Math.abs(cWin.dD)>eps||Math.abs(cWin.transfer)>eps;
+  const releasedMatchesC=Math.abs(sameElapsedReleased.dD)<=eps&&Math.abs(sameElapsedReleased.transfer)<=eps;
+  const activeDiffersC=Math.abs(sameElapsedActive.dD)>eps||Math.abs(sameElapsedActive.transfer)>eps;
+  let verdict,label,explanation;
+  if(!restorationDirect && releasedMatchesC && activeDiffersC){
+    verdict='ARTEFACT_EXPOSITION_PROTOCOLAIRE';
+    label='RÉSIDU EXPLIQUÉ PAR L’EXPOSITION ACTIVE SUPPLÉMENTAIRE — PAS PAR LA RESTAURATION';
+    explanation='Dans la copie analytique des lois natives, restaurer C n’ajoute directement ni dD ni transfer. À durée égale et avec A relâché, le témoin sans restauration reproduit C. D s’écarte parce que D_STD_001 maintient la tension A–B après l’activation de protected jusqu’à transfer>.10. Le résidu C↔D est donc attribuable à une différence d’exposition qAB du protocole, et non au simple temps écoulé ni à un effet propre de restauration sur dD/transfer.';
+  }else if(restorationDirect){
+    verdict='EFFET_RESTAURATION';label='EFFET DIRECT DE RESTAURATION SUR dD/transfer DÉTECTÉ';
+    explanation='La fenêtre de restauration modifie directement dD ou transfer dans la copie analytique des lois.';
+  }else{
+    verdict='MIXTE';label='RÉSULTAT MIXTE — NE PAS TRANCHER';
+    explanation='La décomposition pure ne permet pas d’attribuer le résidu à une seule source.';
+  }
+  return {version:'v0.1.21.5',mode:'PURE_ANALYTIC_NO_LIVE_ENGINE',completedAt:new Date().toISOString(),C:{steps:cSteps,baseline:purePoint(commonActive,'BASE','baseline commune active'),preS:cPreS},D:{steps:dSteps,baseline:purePoint(commonActive,'BASE','baseline commune active'),matched:dMatched,qualified:dQualified,preS:dPreS},analysis:{restoreLatencyMs,dExtraLatencyMs:+dExtraLatencyMs.toFixed(1),cWindow:cWin,dMatchedWindow:dWin,dExtraWindow:dExtra,finalGap,sameElapsedReleased,sameElapsedActive,cElapsedMs:+(cElapsed*1000).toFixed(1),verdict,label,explanation},causalEngineModified:false,gStarApplied:false,corpusPolluted:false};
+}
+async function executeAutopsyCD(){
+  const runsBefore=labRuns().length;
+  const storageBefore=pureStorageSnapshot();
+  const stateBefore=JSON.stringify(S);
+  autopsyStatus('Autopsie C↔D — calcul analytique pur','Aucun appel au moteur vivant. Deux objets C′/D′ sont calculés en mémoire.','');
+  try{
+    const result=pureRunAutopsy();
+    const runsAfter=labRuns().length;
+    const storageAfter=pureStorageSnapshot();
+    const stateAfter=JSON.stringify(S);
+    result.sandbox={isolated:true,strict:true,pure:true,totalRunsBefore:runsBefore,totalRunsAfter:runsAfter,corpusChangedDuringRun:runsAfter!==runsBefore,localStorageChanged:storageAfter!==storageBefore,liveStateChanged:stateAfter!==stateBefore};
+    if(result.sandbox.corpusChangedDuringRun||result.sandbox.localStorageChanged||result.sandbox.liveStateChanged){
+      result.analysis.verdict='AUTOPSIE_INVALIDE_EFFET_DE_BORD';
+      result.analysis.label='AUTOPSIE INVALIDE — EFFET DE BORD DÉTECTÉ';
+      result.analysis.explanation='Le contrôle préalable/postérieur a détecté une modification du monde vivant, du corpus ou de localStorage.';
+    }
+    autopsyStore(result); // mémoire JS uniquement, aucune persistance
+    renderAutopsyCD();
+    return result.analysis.verdict!=='AUTOPSIE_INVALIDE_EFFET_DE_BORD';
+  }catch(e){
+    autopsyStatus('Autopsie C↔D — ERREUR ANALYTIQUE',String(e&&e.message?e.message:e),'fail');
+    return false;
+  }
+}
+
+
+// v0.1.22 — AUTOPSIE PROPRE DE LA RESTAURATION, purement analytique.
+// L'état vivant et le corpus restent intacts. La branche NR est une intervention
+// contrefactuelle do(restoration=0) limitée à une seule tranche dt, toutes les autres
+// équations restant identiques. Ce n'est pas une modification du moteur vivant.
+function pureStepWithoutRestore(x,dt){
+  x.t+=dt;
+  const q=pureQAB(x);
+  if(q>.10&&!x.episode){x.episode=true;x.episodes++;x.history++;}
+  if(q<.035&&x.episode)x.episode=false;
+  if(q>.035){
+    const load=1.25*q*dt*.35*x.old;
+    if(!x.protected){
+      x.dC=pureClamp(x.dC+load,0,20);
+      x.omegaC=pureClamp(x.omegaC-.025*q*dt*.35,0,1);
+      const mx=(x.A.x+x.B.x)/2,my=(x.A.y+x.B.y)/2;
+      x.C.x=x.C.x+(mx-x.C.x)*(.018*q);
+      x.C.y=x.C.y+(my-x.C.y)*(.018*q);
+    }else{
+      x.dD=pureClamp(x.dD+load*.95,0,20);
+      x.transfer+=load*.95;
+    }
+  }
+  // volontairement aucune évaluation du prédicat de restauration ici.
+  const dc0=pureDist(x.C,x.C0);
+  if(x.history>=3&&!x.protected&&dc0>.22)x.protected=true;
+}
+function pureRestorationAutopsy(){
+  const dt=.005;
+  const x=pureInitArm(), trace=[];
+  trace.push(purePoint(x,'P0','état initial'));
+  // Même histoire commune : 3 épisodes A-B complets.
+  for(let i=1;i<=3;i++){
+    pureMove(x,'A',{x:.55,y:.30}); pureAdvance(x,.300,dt);
+    trace.push(purePoint(x,'P'+(i*2-1),'épisode #'+i+' actif'));
+    pureMove(x,'A',{x:.27,y:.32}); pureAdvance(x,.350,dt);
+    trace.push(purePoint(x,'P'+(i*2),'épisode #'+i+' relâché'));
+  }
+  if(!(x.history>=3&&x.episodes>=3&&x.protected)) throw new Error('Baseline historique/protected attendue non atteinte.');
+  // Replacer C à l'origine sans avancer le temps : état immédiatement avant le prédicat natif.
+  pureMove(x,'C',{x:.49,y:.62});
+  const X0=pureClone(x);
+  const pre=purePoint(X0,'X0','état commun juste avant C_RESTORE');
+  if(pureQAB(X0)>.035) throw new Error('qAB n’est pas relâché dans X0.');
+  if(!X0.protected) throw new Error('protected doit être identique et actif dans X0.');
+  if(X0.restores!==0||X0.restored) throw new Error('X0 contient déjà une restauration.');
+
+  const R=pureClone(X0), NR=pureClone(X0);
+  pureStep(R,dt);                 // restauration native autorisée
+  pureStepWithoutRestore(NR,dt); // même tranche, seul événement restauration neutralisé
+  const rPost=purePoint(R,'R1','après dt — restauration autorisée');
+  const nrPost=purePoint(NR,'NR1','après dt — restauration neutralisée');
+  if(!(R.restores>=1&&R.restored)) throw new Error('La branche R n’a pas produit la restauration native.');
+  if(NR.restores!==0||NR.restored) throw new Error('La branche NR a produit une restauration malgré l’intervention analytique.');
+
+  const dR=pureDelta(pre,rPost), dNR=pureDelta(pre,nrPost);
+  const effect={
+    dC:+(dR.dC-dNR.dC).toFixed(4),
+    omegaC:+(dR.omegaC-dNR.omegaC).toFixed(4),
+    dD:+(dR.dD-dNR.dD).toFixed(4),
+    transfer:+(dR.transfer-dNR.transfer).toFixed(4)
+  };
+  const eps=.003;
+  const cStateEffect=Math.abs(effect.dC)>eps||Math.abs(effect.omegaC)>eps;
+  const transferEffect=Math.abs(effect.dD)>eps||Math.abs(effect.transfer)>eps;
+  let verdict,label,explanation;
+  if(cStateEffect&&!transferEffect){
+    verdict='MODIFICATEUR_ETAT_C';
+    label='EFFET PROPRE DE RESTAURATION ISOLÉ — MODIFICATEUR D’ÉTAT DE C, PAS RÉGIME DE TRANSFERT';
+    explanation='À état et temps identiques, la restauration modifie dC et/ou omegaC, tandis que dD et transfer restent inchangés. C possède donc ici un résidu causal propre comme événement historique modificateur de l’état de C, sans effet direct détecté sur le transfert.';
+  }else if(!cStateEffect&&!transferEffect){
+    verdict='DETRUIRE_C';
+    label='AUCUN EFFET PROPRE DÉTECTÉ — C PEUT ÊTRE DÉTRUIT COMME CATÉGORIE CAUSALE';
+    explanation='La branche R est indiscernable de NR sur les quatre variables ciblées. Dans ce moteur, l’événement restauration n’apporte alors aucun état causal irréductible mesuré par ce test.';
+  }else if(transferEffect){
+    verdict='EFFET_RESTAURATION_PLUS_LARGE';
+    label='EFFET PROPRE DE RESTAURATION SUR LE TRANSFERT DÉTECTÉ — NE PAS RÉTROGRADER C';
+    explanation='À exposition et temps identiques, la restauration modifie dD et/ou transfer. Elle possède donc un effet causal propre plus large qu’un simple modificateur interne de C.';
+  }else{
+    verdict='INDETERMINE'; label='RÉSULTAT INDÉTERMINÉ'; explanation='Le test ne permet pas de trancher proprement.';
+  }
+  return {version:'v0.1.22',mode:'PURE_RESTORATION_COUNTERFACTUAL',completedAt:new Date().toISOString(),dtMs:dt*1000,X0:pre,R:{post:rPost,delta:dR},NR:{post:nrPost,delta:dNR},effect,checks:{sameInitialState:true,sameTime:true,qABReleased:pureQAB(X0)<=.035,protectedShared:X0.protected===true,noPriorRestore:X0.restores===0},analysis:{eps,verdict,label,explanation},trace,causalEngineModified:false,gStarApplied:false,corpusPolluted:false};
+}
+function renderAutopsyCD(){
+  const el=document.getElementById('autopsyCD'); if(!el)return;
+  const a=autopsyLoad();
+  if(!a?.X0||!a?.R||!a?.NR){el.innerHTML='<b>Autopsie propre de la restauration</b><br><span class="muted">Non exécutée. Un état unique X0 est cloné en R et NR ; aucun g*, aucun run, aucune persistance.</span>';return;}
+  const f=v=>typeof v==='number'?v.toFixed(3):'—';
+  let h='<b>Autopsie propre de la restauration — R vs NR</b><br>';
+  h+=`<div class="card" style="margin-top:10px"><b>X0 · état commun juste avant C_RESTORE</b><br><span class="muted">t ${f(a.X0.t)} · dC ${f(a.X0.dC)} · ΩC ${f(a.X0.omegaC)} · dD ${f(a.X0.dD)} · transfer ${f(a.X0.transfer)} · protected ${a.X0.protected?'OUI':'NON'} · restores ${a.X0.restores} · qAB ${f(a.X0.qAB)} · distC ${Number(a.X0.distC).toFixed(5)}</span></div>`;
+  h+=`<div class="card" style="margin-top:10px"><b>R · restauration native autorisée</b><br><span class="muted">ΔdC ${f(a.R.delta.dC)} · ΔΩC ${f(a.R.delta.omegaC)} · ΔdD ${f(a.R.delta.dD)} · Δtransfer ${f(a.R.delta.transfer)}</span></div>`;
+  h+=`<div class="card" style="margin-top:10px"><b>NR · même état / même temps / restauration neutralisée</b><br><span class="muted">ΔdC ${f(a.NR.delta.dC)} · ΔΩC ${f(a.NR.delta.omegaC)} · ΔdD ${f(a.NR.delta.dD)} · Δtransfer ${f(a.NR.delta.transfer)}</span></div>`;
+  h+=`<div class="card" style="margin-top:10px"><b>Effet propre R − NR</b><br>dC <b>${f(a.effect.dC)}</b> · omegaC <b>${f(a.effect.omegaC)}</b> · dD <b>${f(a.effect.dD)}</b> · transfer <b>${f(a.effect.transfer)}</b></div>`;
+  h+=`<div class="card" style="margin-top:10px"><b>Tests d’identité</b><br>État initial identique : <b class="pass">OUI</b><br>Même temps : <b class="pass">OUI</b><br>qAB relâché : <b class="${a.checks.qABReleased?'pass':'fail'}">${a.checks.qABReleased?'OUI':'NON'}</b><br>protected commun : <b class="${a.checks.protectedShared?'pass':'fail'}">${a.checks.protectedShared?'OUI':'NON'}</b><br>Aucune restauration préalable : <b class="${a.checks.noPriorRestore?'pass':'fail'}">${a.checks.noPriorRestore?'OUI':'NON'}</b></div>`;
+  h+=`<hr style="border:0;border-top:1px solid #263044;margin:12px 0"><b>Verdict instrumental v0.1.22</b><br><span class="${a.analysis.verdict==='DETRUIRE_C'?'fail':'pass'}">${a.analysis.label}</span><br><span class="muted">${a.analysis.explanation}</span>`;
+  if(a.sandbox)h+=`<hr><b>Sandbox</b><br>Corpus avant : ${a.sandbox.totalRunsBefore} · après : ${a.sandbox.totalRunsAfter} · Δ corpus : <b>${a.sandbox.corpusChangedDuringRun?'OUI':'NON'}</b> · Δ localStorage : <b>${a.sandbox.localStorageChanged?'OUI':'NON'}</b> · Δ état vivant S : <b>${a.sandbox.liveStateChanged?'OUI':'NON'}</b>`;
+  el.innerHTML=h;
+}
+async function executeAutopsyCD(){
+  const runsBefore=labRuns().length, storageBefore=pureStorageSnapshot(), stateBefore=JSON.stringify(S);
+  autopsyStatus('Autopsie restauration — calcul analytique pur','Construction de X0 puis bifurcation R / NR sans moteur vivant.','');
+  try{
+    const result=pureRestorationAutopsy();
+    const runsAfter=labRuns().length, storageAfter=pureStorageSnapshot(), stateAfter=JSON.stringify(S);
+    result.sandbox={isolated:true,strict:true,pure:true,totalRunsBefore:runsBefore,totalRunsAfter:runsAfter,corpusChangedDuringRun:runsAfter!==runsBefore,localStorageChanged:storageAfter!==storageBefore,liveStateChanged:stateAfter!==stateBefore};
+    if(result.sandbox.corpusChangedDuringRun||result.sandbox.localStorageChanged||result.sandbox.liveStateChanged){result.analysis.verdict='AUTOPSIE_INVALIDE_EFFET_DE_BORD';result.analysis.label='AUTOPSIE INVALIDE — EFFET DE BORD DÉTECTÉ';result.analysis.explanation='Le contrôle avant/après détecte une modification hors sandbox.';}
+    autopsyStore(result); renderAutopsyCD(); return result.analysis.verdict!=='AUTOPSIE_INVALIDE_EFFET_DE_BORD';
+  }catch(e){autopsyStatus('Autopsie restauration — ERREUR ANALYTIQUE',String(e&&e.message?e.message:e),'fail');return false;}
+}
+
+async function executeRecipe(recipeId){if(autoBusy)return;autoBusy=true;const r=RECIPES[recipeId];try{setRecipeStatus('Recette '+r.id+' — préparation…');await prepareAutoRun(r);
+if(r.condition==='B'||r.condition==='C'||r.condition==='D'){
+ for(let i=1;i<=3;i++){
+  setRecipeStatus(r.id+' — épisode '+i+'/3 : tension');scriptedMove('A',r.active,r.condition+'_ACTIVE_'+i);await waitFor(()=>S.episode||(r.condition==='B'&&S.experiment?.bQualified),1200);await wait(r.activeMs);
+  if(r.condition==='B'&&i===3){await waitFor(()=>!!S.experiment?.bQualified,1200);break;}
+  if(r.condition==='D'&&i===3){setRecipeStatus('D_STD_001 — attente activation native de protected');await waitFor(()=>S.protected,1600);setRecipeStatus('D_STD_001 — protected natif ; accumulation jusqu’à qualification D');await waitFor(()=>qualifies('D'),3000,25);}
+  setRecipeStatus(r.id+' — épisode '+i+'/3 : relâchement');scriptedMove('A',r.rest,r.condition+'_RELEASE_'+i);await waitFor(()=>!S.episode,1200);await wait(r.restMs);
+ }
+}
+if(r.condition==='C'){
+ if(!mirrorSupportsSharedProtected())throw new Error('Contrôle miroir B/C absent ou non concluant : exécutez d’abord le contrôle miroir.');
+ if(!(S.episodes>=3&&S.history>=3&&S.protected))throw new Error('Baseline commune B/C non atteinte avant restauration.');
+ S.experiment.cSharedBaseline={capturedAt:Date.now(),activationSource:'mirror-common-native-threshold',protected:!!S.protected,history:S.history,episodes:S.episodes,transfer:+S.transfer.toFixed(4),dC:+S.dC.toFixed(4),dD:+S.dD.toFixed(4),omegaC:+S.omegaC.toFixed(4),state:causalState()};
+ causalLog('C_SHARED_PROTECTED_BASELINE',{baseline:deep(S.experiment.cSharedBaseline)});
+ setRecipeStatus('C_STD_001 — baseline B/C commune capturée ; restauration native');scriptedMove('C',r.restoreC,'C_RESTORE_ORIGIN');
+ await waitFor(()=>!!S.experiment?.cQualified,1800);
+}
+if(r.condition==='D'){
+ if(S.restores!==0||S._restored)throw new Error('D indépendant invalide : une restauration a eu lieu avant S*.');
+ if(!(S.episodes>=3&&S.history>=3&&S.protected&&S.transfer>.10))throw new Error('D indépendant non atteint par le moteur.');
+ S.experiment.dIndependentWitness={capturedAt:Date.now(),restores:S.restores,_restored:!!S._restored,protected:!!S.protected,history:S.history,episodes:S.episodes,transfer:+S.transfer.toFixed(4),state:causalState()};
+ causalLog('D_INDEPENDENT_QUALIFIED',{witness:deep(S.experiment.dIndependentWitness)});
+}
+if(!qualifies(r.condition))throw new Error('Qualification '+r.condition+' non obtenue');setRecipeStatus(r.id+' — qualification OK ; normalisation S*');normalizeGeometry();await wait(80);setRecipeStatus(r.id+' — g* en cours (3 s)…');applyGStar();await waitFor(()=>S.experiment?.gStarDone,GSTAR.windowMs+1800,50);labStore(true);setRecipeStatus(r.id+' — terminé · résultat verrouillé','pass');causalLog('RECIPE_DONE',{recipeId:r.id});renderLab();return true}catch(e){S._labFreeze=true;S._labTestActive=false;causalLog('RECIPE_ERROR',{recipeId:r?.id||recipeId,error:String(e)});setRecipeStatus((r?.id||recipeId)+' — ERREUR : '+e.message,'fail');renderLab();return false}finally{autoBusy=false}}
+async function executeSeries(recipeId,n=3){if(autoBusy)return;autoBusy=true;const r=RECIPES[recipeId];let ok=0;try{for(let i=1;i<=n;i++){setRecipeStatus('Série '+r.id+' — run '+i+'/'+n);autoBusy=false;const good=await executeRecipe(recipeId);autoBusy=true;if(!good)break;ok++;await wait(250);}setRecipeStatus('Série '+r.id+' : '+ok+'/'+n+' runs terminés'+(ok===n?' · reproductibilité prête à lire':' · interrompue'),ok===n?'pass':'fail');renderLab()}finally{autoBusy=false}}
+function newRunId(){return 'R'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6)}
+function reset(){if(S&&S.exitTimer){clearTimeout(S.exitTimer)}S={runId:newRunId(),startedAt:Date.now(),p:init.p.map(o=>({...o,vx:0,vy:0,load:0,mem:0})),dC:init.dC,dD:init.dD,omegaC:init.omegaC,old:1,episode:false,episodes:0,history:0,rigid:0,transfer:0,phase:0,phaseTime:0,lastCalm:0,lastMeaningfulAt:Date.now(),exitEligibleAt:null,exitShown:false,exitPending:false,exitTimer:null,restCueShown:false,restCueAt:null,actions:0,restores:0,protected:false,protectTime:0,ended:false,answer:null,moves:{A:0,B:0,C:0,D:0,E:0},distanceMoved:{A:0,B:0,C:0,D:0,E:0},events:[],causalJournal:[],experiment:{condition:null,normalized:false,gStar:null,gStarRunning:false,gStarDone:false,bQualified:null,cQualified:null,resultLocked:null,recipeId:null,recipeSpec:null,cDiagnostic:null,protectionAudit:null,lastExternalInput:null,mirrorAuditMode:false,cSharedBaseline:null,dIndependentWitness:null},_labFreeze:false,_labTestActive:false};document.getElementById('end').classList.remove('show');document.getElementById('question').classList.remove('show');document.getElementById('afterAnswer').textContent='';wh.classList.remove('show');}
+reset();
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}addEventListener('resize',resize);resize();
+function P(id){return S.p.find(x=>x.id===id)}
+function px(p){return {x:p.x*W,y:p.y*H}}
+// v1.1.2 · RÉPONSE SENSIBLE — couche visuelle uniquement.
+// Ces offsets/impulsions n'entrent jamais dans S, qAB, RESTORE, protected, transfer ou les lois causales.
+const VRESP={};
+const PUBLIC_SENSE={queue:[],hintResponse:false,hintTrace:false,discovery:false,moveMemory:{},echoes:[],lateRestoreWhisper:false,exitSilence:false};
+function vr(id){return VRESP[id]||(VRESP[id]={x:0,y:0,vx:0,vy:0})}
+function resetPublicSense(){Object.keys(VRESP).forEach(k=>delete VRESP[k]);PUBLIC_SENSE.queue.length=0;PUBLIC_SENSE.hintResponse=false;PUBLIC_SENSE.hintTrace=false;PUBLIC_SENSE.discovery=false;PUBLIC_SENSE.moveMemory={};PUBLIC_SENSE.echoes=[];PUBLIC_SENSE.lateRestoreWhisper=false;PUBLIC_SENSE.exitSilence=false}
+function visualPx(p){const z=px(p),v=vr(p.id);return{x:z.x+v.x,y:z.y+v.y}}
+function visualImpulse(sourceId,dx,dy,moved){
+  const src=P(sourceId); if(!src||moved<=.025)return;
+  const mag=Math.hypot(dx,dy)||1, ux=dx/mag,uy=dy/mag;
+  let rank=0, readable=false;
+  for(const p of S.p){if(p.id===sourceId)continue;
+    const d=dist(src,p), reach=clamp(1-d/.64,0,1); if(reach<=.08)continue;
+    // v1.2 : la réponse sensible est légèrement différée pour que le geste puis la réponse soient lisibles.
+    // Cette file n'agit que sur VRESP : aucune coordonnée causale n'est modifiée.
+    const sign=(['B','D'].includes(p.id)?1:-1), strength=(7+24*reach)*Math.min(1,moved/.18);
+    const delay=170+rank*38+Math.round((1-reach)*70); rank++;
+    PUBLIC_SENSE.queue.push({at:performance.now()+delay,id:p.id,vx:(ux*.62-sign*uy*.38)*strength,vy:(uy*.62+sign*ux*.38)*strength,reach});
+    if(reach>.28)readable=true;
+  }
+  if(readable&&!PUBLIC_SENSE.hintResponse){PUBLIC_SENSE.hintResponse=true;setTimeout(()=>{if(entered&&!S.ended)whisper('Quelque chose a bougé.',2400)},360)}
+}
+// v1.3 · DRAMATURGIE DE LA DÉCOUVERTE — lecture publique seulement.
+// On mémorise quelques gestes pour rendre perceptible qu'un geste répété peut rencontrer un monde déjà transformé.
+// Aucun élément ci-dessous ne modifie S, les coordonnées causales, les seuils ou les lois du moteur.
+function discoveryAfterMove(id){
+  const now=performance.now(), p=P(id); if(!p)return;
+  const state={history:S.history,restores:S.restores,protected:!!S.protected,transfer:S.transfer,dC:S.dC,omegaC:S.omegaC};
+  const prev=PUBLIC_SENSE.moveMemory[id];
+  PUBLIC_SENSE.moveMemory[id]={state:{...state},x:p.x,y:p.y,t:now};
+  if(!prev||PUBLIC_SENSE.discovery||S.actions<3)return;
+  const changed=(state.history!==prev.state.history)||(state.restores!==prev.state.restores)||(state.protected!==prev.state.protected)||(Math.abs(state.transfer-prev.state.transfer)>.06)||(Math.abs(state.dC-prev.state.dC)>.28)||(Math.abs(state.omegaC-prev.state.omegaC)>.018);
+  if(!changed)return;
+  PUBLIC_SENSE.discovery=true;
+  PUBLIC_SENSE.echoes.push({id,x:prev.x,y:prev.y,born:now,life:4200});
+  setTimeout(()=>{if(entered&&!S.ended)whisper('Pas tout à fait pareil.',3000)},520);
+}
+function updateVisualResponse(dt){
+  const now=performance.now();
+  for(let i=PUBLIC_SENSE.queue.length-1;i>=0;i--){const q=PUBLIC_SENSE.queue[i];if(q.at>now)continue;const v=vr(q.id);v.vx+=q.vx;v.vy+=q.vy;PUBLIC_SENSE.queue.splice(i,1)}
+  for(const p of S.p){const v=vr(p.id);
+    // Frémissement visuel lié aux états déjà calculés, sans rétroaction causale.
+    let fx=0,fy=0;
+    if(p.id==='C'&&p.load>.02){const a=P('A'),b=P('B'),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;fx+=(mx-p.x)*p.load*8.2;fy+=(my-p.y)*p.load*8.2}
+    if(p.id==='D'&&S.transfer>.05){const c=P('C'),dx=p.x-c.x,dy=p.y-c.y,n=Math.hypot(dx,dy)||1;fx+=(dx/n)*Math.min(3.8,S.transfer*1.0);fy+=(dy/n)*Math.min(3.8,S.transfer*1.0)}
+    v.vx+=(fx-v.x*.95)*dt;v.vy+=(fy-v.y*.95)*dt;
+    const damp=Math.pow(.12,dt);v.vx*=damp;v.vy*=damp;v.x+=v.vx*dt;v.y+=v.vy*dt;
+    const lim=Math.min(W,H)*.042,n=Math.hypot(v.x,v.y);if(n>lim){v.x*=lim/n;v.y*=lim/n}
+  }
+}
+function qAB(){const a=P('A'),b=P('B'),d=dist(a,b),d0=.40;return clamp((Math.abs(d-d0)/d0-.15)*1.8,0,1)}
+function renderBProbe(){const active=S.experiment?.condition==='B'&&!document.getElementById('lab').classList.contains('on')&&entered&&!S.experiment?.gStarRunning&&!S.experiment?.gStarDone;if(!active){bProbe.className='bProbe';bProbe.innerHTML='';return}const n=Math.min(S.episodes,3);let msg='';if(S.experiment?.bQualified){msg='<strong>Épisodes A–B : 3 / 3 ✓</strong><span class="sub">B qualifié — revenez au LAB.</span>';bProbe.className='bProbe on done'}else if(n>=3){const why=S.protected?'protection détectée':S.restores>0?'restauration détectée':'qualification non verrouillée';msg='<strong>Épisodes A–B : 3 / 3</strong><span class="sub">B non qualifié — '+why+'.</span>';bProbe.className='bProbe on'}else if(S.episode){msg='<strong>Épisodes A–B : '+n+' / 3</strong><span class="sub">Épisode reconnu — relâchez A–B jusqu’au retour « prêt ».</span>';bProbe.className='bProbe on'}else{msg='<strong>Épisodes A–B : '+n+' / 3</strong><span class="sub">Prêt pour un nouvel épisode.</span>';bProbe.className='bProbe on'}bProbe.innerHTML=msg}
+function whisper(t,ms=2600){if(PUBLIC_SENSE.exitSilence)return;wh.textContent=t;wh.classList.add('show');clearTimeout(whTimer);whTimer=setTimeout(()=>wh.classList.remove('show'),ms)}
+function observe(type,data={}){S.events.push({t:+((Date.now()-S.startedAt)/1000).toFixed(2),type,...data});causalLog(type,data)}
+function beginEpisode(q){S.episode=true;S.episodes++;S.history++;observe('AB_EPISODE',{q:+q.toFixed(3)});P('C').mem=clamp(P('C').mem+.18);if(S.episodes===2&&!PUBLIC_SENSE.hintTrace){PUBLIC_SENSE.hintTrace=true;whisper('Cela revient.',2600)}if(S.episodes===3){whisper('Encore.');S.phase=Math.max(S.phase,1);lockBQualification();}}
+function endEpisode(){S.episode=false;observe('AB_RELEASE')}
+function trajectory(){const m=S.moves,total=Object.values(m).reduce((a,b)=>a+b,0),focusAB=m.A+m.B,spread=Object.values(m).filter(v=>v>0).length;let regime='dispersion';if(S.protected&&S.transfer>.35)regime='transfer';else if(S.restores>0)regime='restoration';else if(S.episodes>=3&&focusAB>=Math.max(3,total*.55))regime='repetition';else if(spread>=4)regime='plural';else if(S.episodes>=2)regime='memory';return regime}
+function endingFor(r){return {transfer:'Quelque chose a changé de place.',restoration:'Presque comme avant.',repetition:'Quelque chose revient.',plural:'Tout n’a pas bougé de la même manière.',memory:'Quelque chose demeure.',dispersion:'Vous êtes passé par ici.'}[r]}
+function saveRun(){const rec={id:S.runId,endedAt:new Date().toISOString(),duration:+((Date.now()-S.startedAt)/1000).toFixed(1),regime:trajectory(),episodes:S.episodes,actions:S.actions,moves:{...S.moves},distanceMoved:{...S.distanceMoved},history:S.history,restores:S.restores,protected:S.protected,transfer:+S.transfer.toFixed(3),dC:+S.dC.toFixed(3),dD:+S.dD.toFixed(3),omegaC:+S.omegaC.toFixed(3),events:S.events.slice(-80),answer:S.answer};let runs=[];try{runs=JSON.parse(localStorage.getItem(RUN_KEY)||'[]')}catch(e){};runs.push(rec);runs=runs.slice(-12);localStorage.setItem(RUN_KEY,JSON.stringify(runs));labStore(true);return rec}
+function update(dt){if(!entered||S.ended||S._labFreeze)return;S.phaseTime+=dt;const q=qAB();const c=P('C'),d=P('D');
+ // validated T1: event vs continuous load
+ if(q>.10&&!S.episode){beginEpisode(q);if(S._labFreeze)return;}if(q<.035&&S.episode)endEpisode();
+ if(q>.035){let load=1.25*q*dt*.35*S.old;if(!S.protected){S.dC=clamp(S.dC+load,0,20);c.load=clamp(c.load+q*dt*.18,0,1);S.omegaC=clamp(S.omegaC-.025*q*dt*.35,0,1); // visible compensation: C is pulled toward AB midpoint
+   const a=P('A'),b=P('B'),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;c.x=lerp(c.x,mx,.018*q);c.y=lerp(c.y,my,.018*q);
+ }else{S.dD=clamp(S.dD+load*.95,0,20);d.load=clamp(d.load+q*dt*.22,0,1);S.transfer+=load*.95;}}
+ else{c.load*=Math.pow(.82,dt);d.load*=Math.pow(.82,dt)}
+ // after history exists, restoring C near origin preserves/increases history (T2)
+ const ci=init.p[2],dc0=Math.hypot(c.x-ci.x,c.y-ci.y);if(S.history>=3&&dc0<.035&&S.actions>4&&!S._restored){S._restored=true;S.restores++;S.rigid++;S.dC=clamp(S.dC+.8,0,20);S.omegaC=clamp(S.omegaC-.04,0,1);c.mem=clamp(c.mem+.22);if(S.phaseTime<75||!PUBLIC_SENSE.lateRestoreWhisper){if(S.phaseTime>=75)PUBLIC_SENSE.lateRestoreWhisper=true;whisper('Presque au même endroit.',3000)}S.phase=Math.max(S.phase,2);lockCQualification();setTimeout(()=>{S._restored=false},3500)}
+ // public protective gesture: drag C far enough away after history; old mechanism stays, load migrates to D (T3)
+ if(S.history>=3&&!S.protected&&dc0>.22){recordProtectionActivation(dc0);S.protected=true;S.protectTime=0;whisper('Ici.',2200);S.phase=Math.max(S.phase,3)}
+ if(S.protected){S.protectTime+=dt;if(S.transfer>.35&&S.phase<4){S.phase=4;whisper('Ailleurs, peut-être.',3000)}}
+ // v1.3.2 · silence avant sortie : aucune loi causale ni aucun seuil temporel de v1.3.1 n'est modifié.
+ // En phase tardive, « Presque au même endroit. » ne peut apparaître qu'une fois. Dès que la sortie devient éligible, les murmures publics se taisent jusqu'à son apparition.
+ // 0–75 s : aucune sortie. 75–150 s : sortie organique après un calme réel.
+ // 150–180 s : le calme requis décroît progressivement. À 180 s, la sortie devient garantie.
+ // Le monde continue de vivre pendant les 6,5 s de transition : la fin reste une arrivée, pas un verrou.
+ if(!S.ended&&!S._labTestActive&&!S.experiment?.condition){
+   const elapsed=S.phaseTime;
+   const quiet=(Date.now()-(S.lastMeaningfulAt||S.startedAt))/1000;
+   const minPresence=75;
+   const softLimit=150;
+   const hardLimit=180;
+   const baseQuiet=S.actions===0?40:24;
+   let quietNeeded=baseQuiet;
+   if(elapsed>softLimit){
+     const k=clamp((elapsed-softLimit)/(hardLimit-softLimit),0,1);
+     quietNeeded=lerp(baseQuiet,0,k);
+   }
+   // v1.3.3 · seuil de repos : un unique indice tardif, non directif, puis silence.
+   // Aucun effet sur les lois causales, les réponses sensibles ou les seuils de sortie.
+   if(elapsed>=135&&!S.restCueShown&&!S.exitPending){
+     S.restCueShown=true;
+     S.restCueAt=Date.now();
+     whisper('Vous pouvez rester là.',3200);
+   }
+   const organicallyReady=elapsed>=minPresence&&quiet>=quietNeeded;
+   const guaranteedReady=elapsed>=hardLimit;
+   if((organicallyReady||guaranteedReady)&&!S.exitPending){
+     S.exitPending=true;
+     PUBLIC_SENSE.exitSilence=true;
+     wh.classList.remove('show');clearTimeout(whTimer);whTimer=null;
+     S.exitEligibleAt=Date.now();
+     const scheduledRegime=trajectory();
+     observe('EXIT_ELIGIBLE',{regime:scheduledRegime,publicTemporal:true,elapsed:+elapsed.toFixed(1),quiet:+quiet.toFixed(1),guaranteed:guaranteedReady});
+     S.exitTimer=setTimeout(()=>{
+       if(!S.exitPending||S.ended)return;
+       const quietNow=(Date.now()-(S.lastMeaningfulAt||S.startedAt))/1000;
+       // Avant 180 s, un geste significatif peut encore rouvrir la traversée.
+       // Après 180 s, il n'annule plus l'arrivée : l'interaction reste visible jusqu'à l'apparition de la sortie.
+       if(S.phaseTime<hardLimit&&quietNow<quietNeeded){S.exitPending=false;PUBLIC_SENSE.exitSilence=false;S.exitEligibleAt=null;S.exitTimer=null;return;}
+       const r=trajectory();
+       S.ended=true;S.exitShown=true;S.exitPending=false;S.exitTimer=null;
+       observe('END',{regime:r,publicTemporal:true,elapsed:+S.phaseTime.toFixed(1),quiet:+quietNow.toFixed(1),guaranteed:S.phaseTime>=hardLimit});
+       document.getElementById('endText').textContent=endingFor(r);
+       document.getElementById('end').classList.add('show');
+       saveRun();
+     },6500);
+   }
+ }
+ if(location.search.includes('debug=1')){dbg.classList.add('on');dbg.textContent=`phase ${S.phase}  qAB ${q.toFixed(2)}\nepisodes ${S.episodes} history ${S.history}\nD_C ${S.dC.toFixed(2)} ΩdistanceC ${S.omegaC.toFixed(2)}\nD_D ${S.dD.toFixed(2)} old ${S.old.toFixed(2)}\nprotected ${S.protected} transfer ${S.transfer.toFixed(2)}`}
+ }
+ function draw(){ctx.clearRect(0,0,W,H);const top=H*.13,bottom=H*.92;ctx.save();ctx.globalAlpha=.55; // relations
+ for(let i=0;i<S.p.length;i++)for(let j=i+1;j<S.p.length;j++){const a=visualPx(S.p[i]),b=visualPx(S.p[j]),w=((i===0&&j===1)||(i===1&&j===2)||(i===0&&j===2))?1:.35;ctx.strokeStyle=`rgba(132,151,184,${.10*w})`;ctx.lineWidth=1.2*w;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
+ ctx.restore();
+ // v1.3 : une empreinte très brève d'une position antérieure peut apparaître au moment de la découverte.
+ const nowEcho=performance.now();
+ PUBLIC_SENSE.echoes=PUBLIC_SENSE.echoes.filter(e=>nowEcho-e.born<e.life);
+ for(const e of PUBLIC_SENSE.echoes){const age=(nowEcho-e.born)/e.life,alpha=Math.max(0,(1-age)*.16),x=e.x*W,y=e.y*H;ctx.save();ctx.strokeStyle=`rgba(205,218,238,${alpha})`;ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,26+age*18,0,Math.PI*2);ctx.stroke();ctx.restore();}
+
+ for(const p of S.p){const z=visualPx(p),isC=p.id==='C',isD=p.id==='D';if(isC&&p.mem>.02){const hp=clamp((p.mem-.08)/.58,0,1);for(let k=1;k<=3;k++){ctx.beginPath();ctx.arc(z.x,z.y,p.h/2+10+k*10+hp*22,0,Math.PI*2);ctx.strokeStyle=`rgba(187,156,255,${(.018+hp*.115/k).toFixed(3)})`;ctx.lineWidth=.8+hp*.35;ctx.stroke()}}if(isD&&S.transfer>.05){const tp=clamp((S.transfer-.05)/.42,0,1);ctx.beginPath();ctx.arc(z.x,z.y,p.h/2+12+tp*34,0,Math.PI*2);ctx.strokeStyle=`rgba(113,214,196,${(.035+tp*.19).toFixed(3)})`;ctx.lineWidth=.8+tp*.45;ctx.stroke()}
+ const glow=isC?Math.min(.55,.055+p.load*.45+p.mem*.035):isD?Math.min(.4,.035+p.load*.35+Math.min(.08,S.transfer*.05)):.08;ctx.beginPath();ctx.arc(z.x,z.y,p.h/2+10+glow*20,0,Math.PI*2);ctx.fillStyle=`rgba(${isC?'185,132,255':isD?'99,205,188':'145,164,200'},${glow*.16})`;ctx.fill();ctx.beginPath();ctx.arc(z.x,z.y,p.h/2,0,Math.PI*2);const g=ctx.createRadialGradient(z.x-p.h*.12,z.y-p.h*.12,2,z.x,z.y,p.h/2);let col=p.id==='A'?['#d9b45d','#7e5d25']:p.id==='B'?['#72b4ff','#315b8d']:p.id==='C'?['#c17bff','#694092']:p.id==='D'?['#71d5c2','#356f68']:['#ef8e82','#8c4842'];g.addColorStop(0,col[0]);g.addColorStop(1,col[1]);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1;ctx.stroke()}
+ }
+ function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;update(dt);updateVisualResponse(dt);draw();renderBProbe();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+ function hit(x,y){let best=null,bd=60;for(const p of S.p){const z=visualPx(p),d=Math.hypot(x-z.x,y-z.y);if(d<bd){best=p;bd=d}}return best}
+ function pos(e){const r=cv.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top}}
+ function down(e){if(!entered||S._labFreeze)return;const m=pos(e),p=hit(m.x,m.y);if(p){drag=p;dragStart={x:p.x,y:p.y};S._dragSnapshot=causalState();e.preventDefault()}}
+ function move(e){if(!drag)return;const m=pos(e);drag.x=clamp(m.x/W,.06,.94);drag.y=clamp(m.y/H,.16,.90);e.preventDefault()}
+ function up(){if(!drag)return;const id=drag.id,moved=Math.hypot(drag.x-dragStart.x,drag.y-dragStart.y),before=S._dragSnapshot||causalState();if(moved>.025){S.lastMeaningfulAt=Date.now();if(S.phaseTime<180){S.exitEligibleAt=null;if(S.exitTimer){clearTimeout(S.exitTimer);S.exitTimer=null}S.exitPending=false;}S.actions++;S.moves[id]++;S.distanceMoved[id]+=moved;observe('MOVE',{id,d:+moved.toFixed(3),x:+drag.x.toFixed(3),y:+drag.y.toFixed(3)});const after=causalState();causalLog('MOVE_RESULT',{id,before,after});labStore(false);visualImpulse(id,drag.x-dragStart.x,drag.y-dragStart.y,moved);discoveryAfterMove(id)}drag=null;dragStart=null;S._dragSnapshot=null}
+ cv.addEventListener('pointerdown',down);cv.addEventListener('pointermove',move);addEventListener('pointerup',up);cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',move,{passive:false});addEventListener('touchend',up);
+ document.getElementById('enter').onclick=()=>{resetPublicSense();entered=true;causalLog('ENTER',{runId:S.runId});labStore(false);document.getElementById('veil').classList.add('gone');setTimeout(()=>whisper('Vous pouvez aussi ne rien faire.',2600),1200)};
+ document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{if(S.answer)return;S.answer=b.dataset.answer;saveRun();document.getElementById('afterAnswer').textContent='Merci. Vous pouvez revenir, ou laisser cela ici.';document.querySelectorAll('[data-answer]').forEach(x=>x.disabled=true)});
+document.getElementById('again').onclick=()=>{resetPublicSense();reset();document.querySelectorAll('[data-answer]').forEach(x=>x.disabled=false);S.phaseTime=0;document.getElementById('end').classList.remove('show');whisper('Vous êtes là.');};
+// LAB caché : ?lab=1, #lab, ou 7 touchers rapides dans le coin supérieur gauche.
+const lab=document.getElementById('lab');
+function labRuns(){try{return JSON.parse(localStorage.getItem(LAB_KEY)||'[]')}catch(e){return[]}}
+function mean(xs){return xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:NaN}
+function rangeOf(xs){const v=xs.filter(Number.isFinite);return v.length?{n:v.length,min:Math.min(...v),max:Math.max(...v),mean:mean(v)}:null}
+function overlap(a,b){return !!(a&&b&&Math.max(a.min,b.min)<=Math.min(a.max,b.max))}
+function stateValue(r,k){const b=r.gStar?.before||r.preG||{};return b[k]}
+function deltaValue(r,k){return r.gStar?.delta?.[k]}
+function rangeText(z){return z?`${fmt(z.mean)} [${fmt(z.min)}…${fmt(z.max)}]`:'—'}
+function boolSummary(rr,k){const vals=rr.map(r=>!!stateValue(r,k));if(!vals.length)return'—';const t=vals.filter(Boolean).length;return t===vals.length?'OUI':t===0?'NON':`${t}/${vals.length} OUI`}
+function numericDiffs(a,b,keys,getter){const out=[];for(const k of keys){const ra=rangeOf(a.map(r=>getter(r,k))),rb=rangeOf(b.map(r=>getter(r,k)));if(ra&&rb&&!overlap(ra,rb))out.push(k)}return out}
+function renderCausalMatrix(runs){
+ const el=document.getElementById('causalMatrix');if(!el)return;
+ const completed=runs.filter(r=>r.gStar?.after&&['A_STD_001','B_STD_001','C_STD_001','D_STD_001'].includes(r.recipeId));
+ const A=completed.filter(r=>r.recipeId==='A_STD_001'),B=completed.filter(r=>r.recipeId==='B_STD_001'),C=completed.filter(r=>r.recipeId==='C_STD_001'),Dind=completed.filter(r=>r.recipeId==='D_STD_001');
+ // D observé à phase comparable = états juste avant g* dont le classificateur dit D.
+ const Dpre=completed.filter(r=>(r.derivedBeforeG||(stateValue(r,'protected')||stateValue(r,'transfer')>.05?'D':stateValue(r,'restores')>0?'C':stateValue(r,'episodes')>=3?'B':'A'))==='D');
+ const groups=[['A',A],['B',B],['C',C],['D indépendant',Dind],['D observé pré-g*',Dpre]];
+ const stateKeys=['dC','dD','omegaC','history','rigid','transfer','restores','episodes'];
+ const boolKeys=['protected'];
+ const respKeys=['dC','dD','omegaC','transfer','Cx','Cy'];
+ let h='<h2>10 · Matrice causale réelle A/B/C/D</h2>';
+ h+='<div class="card"><b>Statut analytique</b><br><span class="muted">D n’est pas une nouvelle condition ajoutée ici : « D observé pré-g* » regroupe uniquement les états déjà classés D par le moteur au même instant de comparaison. D indépendant D_STD_001 = '+Dind.length+' run(s). Les moyennes et intervalles min–max sont descriptifs ; ils ne créent aucun seuil causal.</span></div>';
+ h+='<div class="card" style="overflow:auto"><b>État interne juste avant g*</b><table><thead><tr><th>Variable</th>'+groups.map(([n])=>`<th>${n}</th>`).join('')+'</tr></thead><tbody>';
+ for(const k of stateKeys){h+=`<tr><td>${k}</td>`+groups.map(([,rr])=>`<td>${rangeText(rangeOf(rr.map(r=>Number(stateValue(r,k)))))}</td>`).join('')+'</tr>'}
+ for(const k of boolKeys){h+=`<tr><td>${k}</td>`+groups.map(([,rr])=>`<td>${boolSummary(rr,k)}</td>`).join('')+'</tr>'}
+ h+='</tbody></table></div>';
+ h+='<div class="card" style="overflow:auto"><b>Réponse au même g*</b><table><thead><tr><th>Δ</th><th>A</th><th>B</th><th>C</th><th>D indépendant</th></tr></thead><tbody>';
+ for(const k of respKeys){h+=`<tr><td>${k}</td><td>${rangeText(rangeOf(A.map(r=>Number(deltaValue(r,k)))))}</td><td>${rangeText(rangeOf(B.map(r=>Number(deltaValue(r,k)))))}</td><td>${rangeText(rangeOf(C.map(r=>Number(deltaValue(r,k)))))}</td><td>${Dind.length?rangeText(rangeOf(Dind.map(r=>Number(deltaValue(r,k))))):'non échantillonné'}</td></tr>`}
+ h+='</tbody></table></div>';
+ const cVsBState=numericDiffs(C,B,stateKeys,stateValue);
+ const cVsDObservedState=numericDiffs(C,Dpre,stateKeys,stateValue);
+ const cVsDState=Dind.length?numericDiffs(C,Dind,stateKeys,stateValue):[];
+ const cVsBResp=numericDiffs(C,B,respKeys,deltaValue);
+ const cVsDResp=Dind.length?numericDiffs(C,Dind,respKeys,deltaValue):[];
+ const allCisD=C.length>0&&C.every(r=>(r.derivedBeforeG||'')==='D');
+ const restorationRecorded=C.length>0&&C.every(r=>Number(stateValue(r,'restores'))>=1);
+ const stateTest=Dind.length>=2 ? (C.length>=2&&B.length>=2&&cVsBState.length>0&&cVsDState.length>0) : null;
+ const responseVsB=C.length>=2&&B.length>=2&&cVsBResp.length>0;
+ const responseTest=Dind.length>=2 ? (responseVsB&&cVsDResp.length>0) : null;
+ const deletionTest=allCisD&&restorationRecorded;
+ h+='<h2>11 · Tests de destruction de C</h2>';
+ h+='<div class="card"><b>Test 1 — État irréductible</b><br>';
+ h+=`C vs B : variables à intervalles empiriques non chevauchants = <b>${cVsBState.length?cVsBState.join(', '):'aucune'}</b>.<br>`;
+ h+=`C vs D observé pré-g* : <b>${cVsDObservedState.length?cVsDObservedState.join(', '):'aucune'}</b>.<br>`;
+ if(Dind.length<2)h+=`C vs D indépendant : <b class="warn">indéterminé — au moins 2 D_STD_001 requis</b>.<br>`; else h+=`C vs D indépendant : <b>${cVsDState.length?cVsDState.join(', '):'aucune'}</b>.<br>`;
+ h+=`Verdict : <b class="${stateTest===true?'pass':stateTest===false?'fail':'warn'}">${stateTest===true?'C possède un état irréductible vis-à-vis de B et du D indépendant':stateTest===false?'C n’est pas établi comme état distinct du D indépendant':'test en attente du D indépendant'}</b>.</div>`;
+ h+='<div class="card"><b>Test 2 — Réponse irréductible au même g*</b><br>';
+ h+=`C vs B : Δ non chevauchants = <b>${cVsBResp.length?cVsBResp.join(', '):'aucun'}</b>.<br>`;
+ if(Dind.length<2)h+=`C vs D indépendant : <b class="warn">indéterminé — aucun D_STD indépendant n’est présent dans le corpus</b>.<br>`;
+ else h+=`C vs D indépendant : Δ non chevauchants = <b>${cVsDResp.length?cVsDResp.join(', '):'aucun'}</b>.<br>`;
+ h+=`Verdict : <b class="${responseTest===true?'pass':responseTest===false?'fail':'warn'}">${responseTest===true?'réponse propre à C établie':responseTest===false?'réponse propre à C non établie':'test partiel : C diffère de B, mais pas de contrôle D indépendant'}</b>.</div>`;
+ h+='<div class="card"><b>Test 3 — Suppression de l’étiquette C</b><br>';
+ h+=`Tous les C_STD_001 sont déjà classés D avant g* : <b>${C.length?C.filter(r=>r.derivedBeforeG==='D').length+'/'+C.length:'0/0'}</b>.<br>`;
+ h+=`La restauration reste enregistrée comme événement causal (restores ≥ 1) : <b>${restorationRecorded?'OUI':'NON'}</b>.<br>`;
+ h+=`Verdict : <b class="${deletionTest?'pass':'warn'}">${deletionTest?'retirer C comme régime ne supprime pas l’événement restauration ; la distinction peut vivre dans l’histoire, pas dans le classificateur':'suppression non justifiée avec le corpus actuel'}</b>.</div>`;
+ let verdict;
+ if(C.length<2)verdict='C : données insuffisantes.';
+ else if(Dind.length<2)verdict='C : statut intermédiaire — contrôle D indépendant insuffisant.';
+ else if(stateTest===false&&responseTest===false&&deletionTest)verdict='C COMME RÉGIME CAUSAL : REDONDANCE SOUTENUE FACE À D_STD — suppression comme catégorie de régime justifiée ; restauration conservée comme événement historique.';
+ else if(stateTest===true||responseTest===true)verdict='C : RÉSIDU CAUSAL PROPRE DÉTECTÉ FACE À D_STD — ne pas supprimer ; isoler la ou les variables responsables.';
+ else verdict='C : résultat mixte — ne pas supprimer ni réifier sans analyse complémentaire.';
+ h+='<div class="card"><b>Conclusion automatique v0.1.20</b><br><strong>'+verdict+'</strong><br><span class="muted">Cette conclusion est analytique et réversible. Elle ne modifie ni le moteur ni le lexique maître.</span></div>';
+ el.innerHTML=h;
+}
+function fmt(n){return typeof n==='number'?n.toFixed(3):String(n??'—')}
+function renderLab(){renderCDiagnostic();renderCTransitionTrace();renderAutopsyCD();const runs=labRuns(),cond=S.experiment?.condition||null,resultLocked=S.experiment?.resultLocked||null,q=resultLocked?!!resultLocked.qualified:(cond?qualifies(cond):false),bLocked=cond==='B'&&!!S.experiment?.bQualified;const cLocked=cond==='C'&&!!S.experiment?.cQualified;const newRunBtn=document.getElementById('labNewRun');if(newRunBtn)newRunBtn.style.display=S.experiment?.gStarDone?'inline-block':'none';document.querySelectorAll('[data-cond]').forEach(b=>b.classList.toggle('selected',b.dataset.cond===cond));document.querySelectorAll('#mirrorBC1,#recipeA1,#recipeB1,#recipeA3,#recipeB3,#recipeC1,#recipeD1,#recipeD3,#autopsyCD1').forEach(b=>b.disabled=autoBusy);const cCompleted=labRuns().some(r=>r.recipeId==='C_STD_001'&&r.gStar?.after&&r.qualified);document.getElementById('recipeC3').disabled=autoBusy||!cCompleted;const mirrorMode=!!S.experiment?.mirrorAuditMode;document.getElementById('labNormalize').disabled=autoBusy||mirrorMode;document.getElementById('labGStar').disabled=autoBusy||mirrorMode;document.getElementById('labGuide').innerHTML=cond?`<b>Protocole ${cond}</b><br>${GUIDES[cond]}`:'Choisissez une condition. Elle sert seulement d’étiquette expérimentale ; elle ne modifie aucune loi du monde.';const g=S.experiment?.gStar;document.getElementById('labStatus').innerHTML=`Condition : <b>${cond||'—'}</b> · recette : <b>${S.experiment?.recipeId||'manuelle'}</b> · qualification : <b class="${q?'pass':'fail'}">${q?((bLocked||cLocked)?'OK · VERROUILLÉE':'OK'):'NON'}</b> · géométrie S* : <b>${S.experiment?.normalized?'OUI':'NON'}</b> · g* : <b>${S.experiment?.gStarRunning?'EN COURS':S.experiment?.gStarDone?'TERMINÉ · RÉSULTAT VERROUILLÉ':'NON'}</b>${g?.delta?`<br>Δg* : dC ${fmt(g.delta.dC)} · dD ${fmt(g.delta.dD)} · ΩC ${fmt(g.delta.omegaC)} · transfert ${fmt(g.delta.transfer)} · ΔC(${fmt(g.delta.Cx)}, ${fmt(g.delta.Cy)})`:''}`;const cur={runId:S.runId,condition:cond,recipeId:S.experiment?.recipeId||null,qualified:q,derived:derivedHistory(),state:causalState(),experiment:S.experiment};document.getElementById('labCurrent').textContent=JSON.stringify(cur,null,2);document.getElementById('labJournal').textContent=JSON.stringify(S.causalJournal||[],null,2);const counts={A:0,B:0,C:0,D:0};runs.forEach(r=>{if(r.condition)counts[r.condition]=(counts[r.condition]||0)+1});document.getElementById('labSummary').innerHTML=`<p>Runs instrumentés : <b>${runs.length}</b> · A ${counts.A} · B ${counts.B} · C ${counts.C} · D ${counts.D}</p><p class="muted">Validation métrologique : A/B/C restent gelés ; D_STD_001 est le contrôle indépendant manquant. Il doit être reproductible, classé D avant g* et présenter restores=0 avant S*. Condition = histoire imposée ; dérivé/régime = état produit. Le test C↔D devient interprétable après au moins 2 D_STD_001, 3 recommandés.</p>`;
+const completed=runs.filter(r=>r.gStar?.after&&r.condition);const metrics=['dC','dD','omegaC','transfer','Cx','Cy'];const std=completed.filter(r=>['A_STD_001','B_STD_001','C_STD_001','D_STD_001'].includes(r.recipeId));const ids=std.map(r=>r.runId).filter(Boolean),dup=[...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))];const aStd=std.filter(r=>r.recipeId==='A_STD_001'),bStd=std.filter(r=>r.recipeId==='B_STD_001'),cStd=std.filter(r=>r.recipeId==='C_STD_001'),dStd=std.filter(r=>r.recipeId==='D_STD_001');const bToD=bStd.filter(r=>(r.derivedAfterG||r.derived)==='D'||r.regime==='transfer').length;const cQualified=cStd.filter(r=>r.qualified).length;const cBeforeC=cStd.filter(r=>r.derivedBeforeG==='C').length;const cBeforeD=cStd.filter(r=>r.derivedBeforeG==='D').length;const cToD=cStd.filter(r=>(r.derivedAfterG||r.derived)==='D'||r.regime==='transfer').length;let ah='<h2>9 · Audit de validité A/B/C/D</h2><div class="card">';ah+=`Corpus finalisé : A_STD_001 <b>${aStd.length}</b> · B_STD_001 <b>${bStd.length}</b> · C_STD_001 <b>${cStd.length}</b> · D_STD_001 <b>${dStd.length}</b><br>`;ah+=`Identifiants dupliqués : <b>${dup.length?dup.join(', '):'aucun'}</b><br>`;ah+=`Intégrité : un run finalisé est désormais <b>immuable</b> ; changer de protocole après g* crée un nouveau run.<br>`;ah+=`B_STD_001 : condition avant g* = B ; après g*, régime dérivé D/transfer observé dans <b>${bToD}/${bStd.length}</b> run(s).<br>`;ah+=`D_STD_001 : contrôle indépendant sans restauration préalable obtenu dans <b>${dStd.filter(r=>Number(stateValue(r,'restores'))===0&&r.derivedBeforeG==='D').length}/${dStd.length}</b> run(s).<br>`;ah+=`C_STD_001 : qualification miroir + restauration native obtenue dans <b>${cQualified}/${cStd.length}</b> run(s). Régime natif juste avant g* : C dans <b>${cBeforeC}</b>, D dans <b>${cBeforeD}</b> ; après g*, D/transfer dans <b>${cToD}/${cStd.length}</b>. <b>v0.1.19</b> conserve strictement la règle v0.1.17 et le diagnostic v0.1.18 : protected comme baseline commune seulement si le contrôle miroir B/C l’a confirmé avant restauration ; la restauration native reste obligatoire.`;ah+='</div>';document.getElementById('labAudit').innerHTML=ah;let rh='<h2>10 · Reproductibilité intra-recette</h2>';for(const rid of ['A_STD_001','B_STD_001','C_STD_001','D_STD_001']){const rr=completed.filter(x=>x.recipeId===rid);rh+=`<div class="card"><b>${rid}</b> · ${rr.length} run(s)`;if(rr.length>=2){const pieces=[];for(const m of metrics){const vals=rr.map(x=>x.gStar?.delta?.[m]).filter(v=>typeof v==='number');if(vals.length>=2)pieces.push(`${m} étendue ${fmt(Math.max(...vals)-Math.min(...vals))}`)}rh+='<br>'+pieces.join(' · ')}else rh+='<br><span class="muted">Au moins 2 runs requis ; 3 recommandés.</span>';rh+='</div>'}document.getElementById('labRepeat').innerHTML=rh;
+let h='<h2>11 · Comparaison des réponses à g*</h2><table><thead><tr><th>Run</th><th>Recette</th><th>Cond.</th><th>Qual.</th><th>Dérivé avant</th><th>Dérivé après</th><th>dC₀</th><th>dD₀</th><th>ΩC₀</th><th>Hist.</th><th>Rigid.</th><th>Transf.₀</th><th>Δ dC</th><th>Δ dD</th><th>Δ ΩC</th><th>Δ transf.</th><th>Δ Cx/Cy</th><th>Régime</th></tr></thead><tbody>';for(const r of completed.slice().reverse()){const d=r.gStar.delta||{},b=r.gStar.before||r.preG||{};const db=r.derivedBeforeG||(b.protected||b.transfer>.05?'D':b.restores>0?'C':b.episodes>=3?'B':'A');const da=r.derivedAfterG||r.derived||'—';h+=`<tr><td>${r.runId}</td><td>${r.recipeId||'manuel/legacy'}</td><td>${r.condition}</td><td>${r.qualified?'✓':'×'}</td><td>${db}</td><td>${da}</td><td>${fmt(b.dC)}</td><td>${fmt(b.dD)}</td><td>${fmt(b.omegaC)}</td><td>${b.history??'—'}</td><td>${b.rigid??'—'}</td><td>${fmt(b.transfer)}</td><td>${fmt(d.dC)}</td><td>${fmt(d.dD)}</td><td>${fmt(d.omegaC)}</td><td>${fmt(d.transfer)}</td><td>${fmt(d.Cx)}/${fmt(d.Cy)}</td><td>${r.regime||'—'}</td></tr>`}h+='</tbody></table>';if(!completed.length)h+='<p class="warn">Aucun g* complet enregistré pour l’instant.</p>';document.getElementById('labCompare').innerHTML=h;renderCausalMatrix(runs)}
+
+function runSuppressionCTest(){
+  const runs=labRuns();
+  const completed=runs.filter(r=>r.final&&r.gStar?.after&&r.condition);
+  const cRuns=completed.filter(r=>r.recipeId==='C_STD_001');
+  const dRuns=completed.filter(r=>r.recipeId==='D_STD_001');
+  const std=completed.filter(r=>['A_STD_001','B_STD_001','C_STD_001','D_STD_001'].includes(r.recipeId));
+  const out=document.getElementById('cSuppression');
+  const esc=x=>String(x).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  const pre=r=>r.gStar?.before||r.preG||{};
+  const noC=s=>{if(s?.protected||Number(s?.transfer||0)>.05)return'D';if(Number(s?.episodes||0)>=3)return'B';return'A'};
+  const restoreWitness=r=>{
+    const b=pre(r);
+    if(Number(b.restores||0)>=1)return true;
+    return (r.journal||[]).some(e=>/RESTOR/i.test(String(e.kind||'')));
+  };
+  const sig=r=>{
+    const b=pre(r);
+    return JSON.stringify({
+      dC:+Number(b.dC||0).toFixed(3),dD:+Number(b.dD||0).toFixed(3),omegaC:+Number(b.omegaC||0).toFixed(3),
+      history:Number(b.history||0),episodes:Number(b.episodes||0),rigid:Number(b.rigid||0),transfer:+Number(b.transfer||0).toFixed(3),
+      restores:Number(b.restores||0),protected:!!b.protected,old:+Number(b.old||0).toFixed(3)
+    });
+  };
+  const cRestore=cRuns.filter(restoreWitness).length;
+  const cNoCClass=cRuns.map(r=>noC(pre(r)));
+  const cAlreadyNonC=cRuns.filter(r=>r.derivedBeforeG!=='C').length;
+  const cMapCounts=cNoCClass.reduce((a,x)=>(a[x]=(a[x]||0)+1,a),{});
+  const collisions=[];
+  for(const c of cRuns){for(const n of std.filter(r=>r.recipeId!=='C_STD_001')){if(sig(c)===sig(n))collisions.push([c.runId,n.runId,n.recipeId]);}}
+  const metrics=['dC','dD','omegaC','transfer','Cx','Cy'];
+  const range=(arr,m)=>{const v=arr.map(r=>r.gStar?.delta?.[m]).filter(Number.isFinite);return v.length?[Math.min(...v),Math.max(...v)]:null};
+  const overlap=(a,b)=>a&&b&&Math.max(a[0],b[0])<=Math.min(a[1],b[1]);
+  const nonOverlapCD=[];
+  for(const m of metrics){const a=range(cRuns,m),b=range(dRuns,m);if(a&&b&&!overlap(a,b))nonOverlapCD.push(m);}
+  const allRestoresPreserved=cRuns.length>0&&cRestore===cRuns.length;
+  const classificationLoss=cRuns.filter((r,i)=>r.derivedBeforeG==='C'&&cNoCClass[i]!=='C').length;
+  // A "loss" is only claimed when C was actually used as a pre-g* regime in the frozen corpus.
+  const regimeInfoLost=classificationLoss>0;
+  const responseExtraSignal=(cRuns.length>=2&&dRuns.length>=2&&nonOverlapCD.length>0);
+  const dataAdequate=cRuns.length>=2&&dRuns.length>=2;
+  const suppressible=dataAdequate&&allRestoresPreserved&&!regimeInfoLost&&!responseExtraSignal;
+  const corpusBefore=runs.length;
+  let html='<b>Test de suppression analytique de C — v0.1.23</b><br>';
+  html+=`Corpus lu : <b>${completed.length}</b> runs finalisés avec g* ; C_STD_001 <b>${cRuns.length}</b> ; D_STD_001 <b>${dRuns.length}</b>.<br>`;
+  if(!cRuns.length){html+='<span class="warn">Impossible de tester : aucun C_STD_001 finalisé dans le corpus.</span>';out.innerHTML=html;return;}
+  html+='<hr style="border:0;border-top:1px solid #263044;margin:10px 0">';
+  html+=`<b>Test 1 — perte de mémoire historique</b><br>RESTORE reste détectable après retrait du label C dans <b>${cRestore}/${cRuns.length}</b> C_STD_001. ${allRestoresPreserved?'<span class="pass">Aucune perte observée : l’histoire restaurée reste lisible par RESTORE/restores.</span>':'<span class="fail">Perte détectée : au moins une histoire C ne possède pas de témoin RESTORE autonome.</span>'}<br><br>`;
+  html+=`<b>Test 2 — perte de régime/état</b><br>Avant suppression, C était déjà classé autrement que C juste avant g* dans <b>${cAlreadyNonC}/${cRuns.length}</b> run(s). Sans branche C, les mêmes états deviennent : <b>${Object.entries(cMapCounts).map(([k,v])=>k+' '+v).join(' · ')||'—'}</b>.<br>`;
+  if(regimeInfoLost)html+='<span class="warn">Le corpus contient au moins un C réellement utilisé comme régime pré-g* : sa suppression ferait perdre une catégorie de classificateur et demande un contrôle supplémentaire.</span>';
+  else html+='<span class="pass">Aucun état pré-g* du corpus C n’exige le label C pour être classé par les variables causales conservées.</span>';
+  html+=`<br>Collisions exactes de signature causale conservée entre C et non-C : <b>${collisions.length}</b>${collisions.length?' — '+esc(collisions.slice(0,4).map(x=>x.join(' ↔ ')).join(' ; ')):''}.<br><br>`;
+  html+=`<b>Test 3 — perte de discrimination de la réponse à g*</b><br>`;
+  if(!dataAdequate){html+='<span class="warn">Indéterminé : il faut au moins 2 C_STD_001 et 2 D_STD_001 finalisés.</span>'}
+  else if(responseExtraSignal){html+=`<span class="warn">Le label/histoire C sépare encore empiriquement C de D sur : <b>${nonOverlapCD.join(', ')}</b>. Ne pas supprimer C sur ce corpus sans expliquer ce signal.</span>`}
+  else html+='<span class="pass">Aucune métrique de réponse g* ne présente d’intervalle C et D disjoint dans le corpus actuel. Aucun pouvoir discriminant supplémentaire du label C n’est détecté face à D.</span>';
+  html+='<br><br><b>Test 4 — information irréductible portée par C</b><br>';
+  html+=`L’événement RESTORE, dC, ΩC, dD, transfer, history, episodes, rigid et protected sont tous conservés. ${collisions.length?'<span class="warn">Des collisions d’état existent ; elles sont affichées ci-dessus et doivent être interprétées sans réintroduire C par convention.</span>':'<span class="pass">Aucune information causale n’est retirée par l’opération : seul le nom de classe C est neutralisé.</span>'}`;
+  html+='<hr style="border:0;border-top:1px solid #263044;margin:10px 0">';
+  if(suppressible){html+='<b class="pass">VERDICT v0.1.23 — C COMME LABEL/CLASSE EST SUPPRESSIBLE DANS LE CORPUS ACTUEL.</b><br><span class="pass">Aucune perte historique, aucun régime pré-g* irréductible et aucun pouvoir discriminant supplémentaire face à D ne sont détectés. RESTORE reste un événement historique mesurable et ses effets demeurent portés par les variables d’état.</span>'}
+  else{html+='<b class="warn">VERDICT v0.1.23 — SUPPRESSION DE C NON ENCORE ÉTABLIE.</b><br><span class="warn">Le test a trouvé soit une insuffisance de corpus, soit une information/réponse qui ne peut pas encore être éliminée proprement.</span>'}
+  html+=`<br><br><span class="muted">Sandbox analytique : corpus avant ${corpusBefore} · après ${labRuns().length} · Δ corpus ${labRuns().length-corpusBefore}. Aucun run, aucune loi, aucun seuil, aucune qualification et aucune entrée localStorage n’ont été modifiés.</span>`;
+  out.innerHTML=html;
+}
+
+
+function runAlphabetAutopsy(){
+  const out=document.getElementById('alphabetAutopsy');
+  const runs=labRuns();
+  const completed=runs.filter(r=>r.final&&r.gStar?.after&&r.condition&&['A_STD_001','B_STD_001','C_STD_001','D_STD_001'].includes(r.recipeId));
+  const by=L=>completed.filter(r=>r.recipeId===L+'_STD_001');
+  const pre=r=>r.gStar?.before||r.preG||{};
+  const post=r=>r.gStar?.after||r.snapshot||{};
+  const events=r=>{
+    const b=pre(r), j=r.journal||[];
+    return {
+      episodes:Number(b.episodes||0), history:Number(b.history||0), restores:Number(b.restores||0),
+      protected:!!b.protected, transfer:Number(b.transfer||0),
+      restoreEvent:Number(b.restores||0)>0||j.some(e=>/RESTOR/i.test(String(e.kind||''))),
+      protectedEvent:!!b.protected||j.some(e=>/PROTECT/i.test(String(e.kind||'')))
+    };
+  };
+  const regimeNoLabel=s=>{if(s?.protected||Number(s?.transfer||0)>.05)return 'D';if(Number(s?.episodes||0)>=3)return 'B';return 'A'};
+  const range=(rr,key,delta=false)=>{const vals=rr.map(r=>delta?r.gStar?.delta?.[key]:pre(r)?.[key]).filter(Number.isFinite);return vals.length?[Math.min(...vals),Math.max(...vals)]:null};
+  const overlap=(a,b)=>a&&b&&Math.max(a[0],b[0])<=Math.min(a[1],b[1]);
+  const fmtR=x=>x?`${fmt(x[0])}…${fmt(x[1])}`:'—';
+  const metricsState=['dC','dD','omegaC','transfer'];
+  const metricsResp=['dC','dD','omegaC','transfer','Cx','Cy'];
+  const letters=['A','B','C','D'];
+  if(!completed.length){out.innerHTML='<b>Autopsie de l’alphabet — v0.1.24</b><br><span class="warn">Aucun run standard finalisé avec g* n’est disponible.</span>';return;}
+  let html='<b>Autopsie analytique de l’alphabet A/B/C/D — v0.1.24</b><br>';
+  html+=`Corpus standard lu : <b>${completed.length}</b> run(s) finalisé(s). A ${by('A').length} · B ${by('B').length} · C ${by('C').length} · D ${by('D').length}.<br><span class="muted">Aucune mutation : lecture seule du corpus gelé.</span>`;
+  html+='<hr style="border:0;border-top:1px solid #263044;margin:10px 0">';
+  const summaries={};
+  for(const L of letters){
+    const rr=by(L); if(!rr.length){html+=`<div class="card"><b>${L}</b> · données absentes.</div>`;continue;}
+    const ev=rr.map(events);
+    const regimes={}; rr.forEach(r=>{const k=r.derivedBeforeG||regimeNoLabel(pre(r));regimes[k]=(regimes[k]||0)+1});
+    const after={}; rr.forEach(r=>{const k=r.derivedAfterG||regimeNoLabel(post(r));after[k]=(after[k]||0)+1});
+    const eventDesc=[`episodes ${Math.min(...ev.map(x=>x.episodes))}…${Math.max(...ev.map(x=>x.episodes))}`,`history ${Math.min(...ev.map(x=>x.history))}…${Math.max(...ev.map(x=>x.history))}`,`RESTORE ${ev.filter(x=>x.restoreEvent).length}/${rr.length}`,`protected ${ev.filter(x=>x.protected).length}/${rr.length}`].join(' · ');
+    const stateDesc=metricsState.map(m=>`${m} ${fmtR(range(rr,m,false))}`).join(' · ');
+    const respDesc=metricsResp.map(m=>`${m} ${fmtR(range(rr,m,true))}`).join(' · ');
+    const recoverable = L==='C' ? ev.every(x=>x.restoreEvent) : L==='B' ? ev.every(x=>x.episodes>=3&&x.history>=3) : L==='D' ? ev.every(x=>x.protected||x.transfer>.05) : ev.every(x=>x.episodes<3&&!x.protected&&x.restores===0);
+    summaries[L]={rr,ev,recoverable,regimes,after};
+    html+=`<div class="card"><b>${L} — décomposition</b><br><b>Condition imposée</b> : ${L}_STD_001 · ${rr.length} run(s).<br><b>Événements produits</b> : ${eventDesc}.<br><b>Variables d’état pré-g*</b> : ${stateDesc}.<br><b>Régime observé pré-g*</b> : ${Object.entries(regimes).map(([k,v])=>k+' '+v).join(' · ')} ; après g* : ${Object.entries(after).map(([k,v])=>k+' '+v).join(' · ')}.<br><b>Réponse g*</b> : ${respDesc}.<br><b>Reconnaissable sans son nom de classe</b> : <span class="${recoverable?'pass':'warn'}">${recoverable?'OUI':'NON / indéterminé'}</span>.</div>`;
+  }
+  const compareResp=(L,others)=>{
+    const rr=by(L); if(rr.length<2)return [];
+    const oo=others.flatMap(by); if(oo.length<2)return [];
+    return metricsResp.filter(m=>{const a=range(rr,m,true),b=range(oo,m,true);return a&&b&&!overlap(a,b)});
+  };
+  const aResp=compareResp('A',['B','D']);
+  const bResp=compareResp('B',['A','D']);
+  const dResp=compareResp('D',['B','C']);
+  const A=summaries.A,B=summaries.B,C=summaries.C,D=summaries.D;
+  html+='<hr style="border:0;border-top:1px solid #263044;margin:10px 0"><b>Tests de destruction symétriques</b><br><br>';
+  const verdictA=A&&A.recoverable
+    ? `A n’est pas requis comme variable causale autonome : l’état de référence reste lisible par l’absence d’histoire/événement et les variables d’état. ${aResp.length?'Sa réponse diffère empiriquement sur '+aResp.join(', ')+' ; cette différence doit être attribuée aux états conservés, pas au nom A.':'Aucun pouvoir discriminant propre du nom A n’est détecté.'}`
+    : 'A : données insuffisantes ou état non récupérable sans le label.';
+  const verdictB=B&&B.recoverable
+    ? `B n’est pas requis comme cause autonome : la répétition reste lisible par history/episodes. ${bResp.length?'La réponse B est empiriquement distincte sur '+bResp.join(', ')+' ; le signal subsiste après retrait du nom B parce que les variables historiques restent présentes.':'Aucun pouvoir discriminant propre du nom B n’est détecté.'}`
+    : 'B : données insuffisantes ou répétition non récupérable sans le label.';
+  const verdictC=C&&C.recoverable
+    ? 'C reste supprimable comme classe : RESTORE/restores conserve l’événement historique et ses effets d’état sans exiger un régime C.'
+    : 'C : le verdict gelé v0.1.23 ne peut pas être reproduit sur le corpus courant.';
+  const dActive=D&&D.ev.every(x=>x.protected||x.transfer>.05);
+  const verdictD=D&&D.recoverable
+    ? `D n’est pas une variable causale supplémentaire : il est entièrement récupérable par protected/transfer. Mais ${dActive?'il désigne un état dynamique causalement actif du moteur (protected/transfer), donc il peut survivre comme nom de régime descriptif sans être réifié comme cause.':'son statut de régime actif n’est pas établi sur le corpus.'} ${dResp.length?'Aucun nom D n’est nécessaire pour porter ses écarts de réponse ('+dResp.join(', ')+').':''}`
+    : 'D : données insuffisantes ou état non récupérable sans le label.';
+  html+=`<div class="card"><b>Destruction A</b><br>${verdictA}</div>`;
+  html+=`<div class="card"><b>Destruction B</b><br>${verdictB}</div>`;
+  html+=`<div class="card"><b>Destruction C</b><br>${verdictC}</div>`;
+  html+=`<div class="card"><b>Destruction D</b><br>${verdictD}</div>`;
+  const alphabetMinimal=[];
+  if(D&&D.recoverable&&dActive) alphabetMinimal.push('D comme nom de régime dérivé (protected/transfer), non comme cause autonome');
+  html+='<hr style="border:0;border-top:1px solid #263044;margin:10px 0">';
+  html+='<b>Conclusion automatique v0.1.24</b><br>';
+  html+='<span class="pass">La distinction la plus robuste n’est plus entre quatre lettres symétriques, mais entre niveaux ontologiques : recettes/conditions, événements historiques, variables d’état et régimes dérivés.</span><br>';
+  html+=`<b>A</b> : candidat « condition de référence », pas régime causal autonome.<br><b>B</b> : candidat « histoire répétée / recette », pas cause autonome ; son effet est porté par history/episodes et les états produits.<br><b>C</b> : <span class="pass">classe supprimable</span> ; RESTORE demeure événement historique modificateur d’état.<br><b>D</b> : ${alphabetMinimal.length?'<span class="pass">candidat à conserver seulement comme nom de régime dérivé</span>, parce que protected/transfer portent la dynamique.':'<span class="warn">statut encore indéterminé</span>.'}<br>`;
+  html+='<br><span class="muted">Ce verdict ne réécrit pas l’alphabet du moteur. Il indique seulement quels niveaux restent nécessaires pour expliquer le corpus actuel. Toute suppression effective appartient à une version ultérieure.</span>';
+  out.innerHTML=html;
+}
+
+function chooseCondition(c){if(S.experiment?.gStarDone||S.experiment?.resultLocked){reset();entered=true;document.getElementById('veil').classList.add('gone');S.phaseTime=0;causalLog('AUTO_NEW_RUN_BEFORE_CONDITION',{condition:c});}S._labFreeze=false;S._labTestActive=false;S.experiment.condition=c;S.experiment.normalized=false;S.experiment.gStar=null;S.experiment.gStarRunning=false;S.experiment.gStarDone=false;S.experiment.bQualified=null;S.experiment.cQualified=null;S.experiment.resultLocked=null;S.experiment.recipeId=null;S.experiment.recipeSpec=null;causalLog('CONDITION_TAG',{condition:c});labStore(false);renderLab()}
+function openLab(){return false}
+function closeLab(){lab.classList.remove('on');lab.setAttribute('aria-hidden','true');if(S.ended){S.ended=false;document.getElementById('end').classList.remove('show');document.getElementById('question').classList.remove('show');}if(S.experiment?.gStarDone){S._labFreeze=false;S._labTestActive=false;causalLog('POST_GSTAR_RETURN_TO_WORLD',{resultPreserved:true});}last=performance.now();}
+function newExperimentalRun(){if(S.experiment?.gStarDone)labStore(true);reset();entered=true;document.querySelectorAll('[data-answer]').forEach(x=>x.disabled=false);S.phaseTime=0;causalLog('NEW_EXPERIMENTAL_RUN');lab.classList.add('on');lab.setAttribute('aria-hidden','false');last=performance.now();renderLab()}
+document.getElementById('autopsyCD1').onclick=async()=>{try{await executeAutopsyCD()}catch(e){autopsyStatus('Autopsie C↔D — ERREUR DE DÉCLENCHEMENT',String(e&&e.message?e.message:e),'fail')}};document.getElementById('suppressC1').onclick=runSuppressionCTest;document.getElementById('alphabetAutopsy1').onclick=runAlphabetAutopsy;document.getElementById('traceCD1').onclick=()=>executeCTransitionTrace();document.getElementById('mirrorBC1').onclick=()=>executeMirrorBC();document.getElementById('recipeA1').onclick=()=>executeRecipe('A_STD_001');document.getElementById('recipeB1').onclick=()=>executeRecipe('B_STD_001');document.getElementById('recipeC1').onclick=()=>executeRecipe('C_STD_001');document.getElementById('recipeA3').onclick=()=>executeSeries('A_STD_001',3);document.getElementById('recipeB3').onclick=()=>executeSeries('B_STD_001',3);document.getElementById('recipeC3').onclick=()=>executeSeries('C_STD_001',3);document.getElementById('recipeD1').onclick=()=>executeRecipe('D_STD_001');document.getElementById('recipeD3').onclick=()=>executeSeries('D_STD_001',3);document.querySelectorAll('[data-cond]').forEach(b=>b.onclick=()=>chooseCondition(b.dataset.cond));document.getElementById('labNormalize').onclick=normalizeGeometry;document.getElementById('labGStar').onclick=applyGStar;document.getElementById('labClose').onclick=closeLab;document.getElementById('labNewRun').onclick=newExperimentalRun;document.getElementById('labRefresh').onclick=renderLab;document.getElementById('labClear').onclick=()=>{if(confirm('Effacer les runs du LAB, le contrôle miroir B/C, la trace C→D et l’autopsie restauration R/NR ?')){localStorage.removeItem(LAB_KEY);localStorage.removeItem(MIRROR_KEY);localStorage.removeItem(CTRACE_KEY);AUTOPSY_MEM=null;renderLab()}};document.getElementById('labExport').onclick=()=>{const blob=new Blob([JSON.stringify({version:V016,exportedAt:new Date().toISOString(),gStarDefinition:GSTAR,mirrorBC:mirrorLoad(),cTransitionTrace:cTraceLoad(),autopsyCD:autopsyLoad(),runs:labRuns()},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='TRAVERSEE-NUE-v0.1.24-AUTOPSIE-ALPHABET-ABCD-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};/* LAB disabled in public edition. */let secretTaps=[];addEventListener('pointerdown',e=>{if(e.clientX<58&&e.clientY<120){const n=Date.now();secretTaps=secretTaps.filter(t=>n-t<3200);secretTaps.push(n);if(secretTaps.length>=7){secretTaps=[];openLab()}}},{capture:true});
+})();</script></body></html>
