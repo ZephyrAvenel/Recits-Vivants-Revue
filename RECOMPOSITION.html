@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101c">
+<title>RECOMPOSITION — Récits Vivants</title>
+<meta name="description" content="RECOMPOSITION — une œuvre expérimentale des Récits Vivants par Zéphyr Avenel, sur la répétition, la mémoire, la dépendance au sentier et la recomposition.">
+<style>
+:root{
+  --bg:#07101c;
+  --bg2:#0b1422;
+  --ink:#f3efe6;
+  --muted:#a9b4c7;
+  --muted2:#7d899e;
+  --blue:#69aef7;
+  --violet:#9a6df7;
+  --gold:#e9bd67;
+  --line:rgba(188,204,228,.22);
+  --panel:rgba(9,16,29,.82);
+  --panel2:rgba(11,18,31,.92);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+html,body{margin:0;min-height:100%;width:100%;max-width:100%;background:
+  radial-gradient(circle at 50% 8%,rgba(68,93,130,.13),transparent 24%),
+  radial-gradient(circle at 68% 34%,rgba(95,77,142,.08),transparent 26%),
+  linear-gradient(180deg,#07101b 0%,#08111d 48%,#050b13 100%);
+  color:var(--ink);
+}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  overflow-x:hidden;
+  min-width:0;
+}
+img,svg{max-width:100%}
+section,header,footer,nav,div{min-width:0}
+
+body::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background-image:
+   radial-gradient(circle at 8% 12%, rgba(255,255,255,.7) 0 1px, transparent 1.4px),
+   radial-gradient(circle at 23% 32%, rgba(233,189,103,.8) 0 1px, transparent 1.5px),
+   radial-gradient(circle at 64% 18%, rgba(255,255,255,.45) 0 1px, transparent 1.4px),
+   radial-gradient(circle at 77% 45%, rgba(105,174,247,.55) 0 1px, transparent 1.4px),
+   radial-gradient(circle at 90% 16%, rgba(233,189,103,.7) 0 1px, transparent 1.5px),
+   radial-gradient(circle at 11% 78%, rgba(255,255,255,.4) 0 1px, transparent 1.4px),
+   radial-gradient(circle at 50% 90%, rgba(255,255,255,.3) 0 1px, transparent 1.4px);
+  background-size:420px 420px,530px 530px,610px 610px,700px 700px,800px 800px,920px 920px,1050px 1050px;
+  opacity:.4;
+}
+a,button{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrapper{
+  width:min(1180px,calc(100% - 40px));
+  margin:auto;
+  padding-left:max(0px,env(safe-area-inset-left));
+  padding-right:max(0px,env(safe-area-inset-right));
+}
+.topbar{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:22px 0 8px;gap:20px;
+}
+.brand{
+  font-size:.78rem;line-height:1.55;letter-spacing:.26em;text-transform:uppercase;color:#eef2f8;
+}
+.nav{display:flex;gap:24px;align-items:center}
+.nav a,.nav button{
+  border:0;background:none;text-decoration:none;color:#d6dce7;
+  font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;padding:8px 0
+}
+.sound{
+  width:44px;height:44px;border:1px solid rgba(255,255,255,.35)!important;border-radius:50%;
+  display:grid;place-items:center;padding:0!important;font-size:1rem!important
+}
+.hero{text-align:center;padding:34px 0 14px}
+.kicker{font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;color:#c2cad8}
+.hero h1{
+  margin:20px 0 0;font-family:Georgia,"Times New Roman",serif;font-weight:500;
+  font-size:clamp(2.4rem,7.8vw,6.8rem);letter-spacing:.10em;line-height:.98;
+  max-width:100%;white-space:nowrap;overflow:visible;
+  text-shadow:0 0 18px rgba(255,245,225,.12)
+}
+.tagline{
+  margin:20px auto 0;font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(1.25rem,3.1vw,2rem);letter-spacing:.03em;color:#f0ece4
+}
+.experience-shell{margin-top:28px;position:relative}
+.experience-grid{
+  display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:18px;align-items:center;
+}
+.side-note{font-family:Georgia,"Times New Roman",serif;color:#d9e0eb;line-height:1.5;font-size:.92rem}
+.side-note .label{
+  display:block;font-family:Inter,sans-serif;font-weight:600;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px
+}
+.side-note .blue{color:#bcdcff}.side-note .violet{color:#d8c1ff}.side-note .gold{color:#f1d398}
+.side-note.left{text-align:right}
+.side-note.right{text-align:left}
+.side-note.top{align-self:start;margin-top:38px}
+.side-note.bottom{align-self:end;margin-bottom:34px}
+
+.world-wrap{position:relative;display:grid;place-items:center}
+.world{
+  position:relative;width:min(62vw,590px,100%);aspect-ratio:1/1;border-radius:50%;
+  background:radial-gradient(circle,rgba(41,63,95,.18) 0 12%,rgba(14,26,43,.06) 45%,transparent 72%);
+}
+.world::before,.world::after{
+  content:"";position:absolute;inset:5%;border-radius:50%;border:1px solid rgba(121,145,178,.09);pointer-events:none
+}
+.world::after{inset:20%;border-color:rgba(121,145,178,.06)}
+svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.path{fill:none;stroke-linecap:round;transition:opacity 1s ease,stroke-width 1s ease,filter 1s ease}
+.path.old{stroke:var(--gold)}
+.path.alt{stroke:var(--violet)}
+.path.mix{stroke:var(--blue)}
+.node{
+  position:absolute;width:48px;height:48px;border:0;background:transparent;border-radius:50%;
+  transform:translate(-50%,-50%);padding:0;touch-action:manipulation
+}
+.node::before{
+  content:"";position:absolute;inset:8px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0 10%,var(--gold) 14%,rgba(233,189,103,.4) 38%,rgba(233,189,103,0) 74%);
+  box-shadow:0 0 24px rgba(233,189,103,.24);transition:.7s
+}
+.node.alt::before{
+  background:radial-gradient(circle,#fff 0 10%,var(--violet) 14%,rgba(154,109,247,.44) 38%,rgba(154,109,247,0) 74%);
+  box-shadow:0 0 26px rgba(154,109,247,.3)
+}
+.node.blue::before{
+  background:radial-gradient(circle,#fff 0 10%,var(--blue) 14%,rgba(105,174,247,.44) 38%,rgba(105,174,247,0) 74%);
+  box-shadow:0 0 26px rgba(105,174,247,.28)
+}
+.node.dim{opacity:.5}.node.hiddenish{opacity:.16;pointer-events:none}.node.available{opacity:.95;pointer-events:auto}
+.node.available::before{animation:breathe 2.2s ease-in-out infinite}
+.node.pulse::before{animation:pulse .75s ease-out}
+.n0{left:50%;top:54%}.n1{left:78%;top:31%}.n2{left:70%;top:78%}.n3{left:28%;top:72%}.n4{left:25%;top:27%}
+@keyframes pulse{0%{transform:scale(.78)}45%{transform:scale(1.75);filter:brightness(1.8)}100%{transform:scale(1)}}
+@keyframes breathe{0%,100%{transform:scale(.84);opacity:.7}50%{transform:scale(1.12);opacity:1}}
+.echo,.afterglow{
+  position:absolute;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);opacity:0
+}
+.echo{width:10px;height:10px;box-shadow:0 0 15px currentColor}
+.afterglow{width:18px;height:18px;filter:blur(2px)}
+.prompt{
+  text-align:center;margin-top:20px;color:#cfd7e4;font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(1rem,2.2vw,1.5rem);line-height:1.45;min-height:2.8em
+}
+.subprompt{
+  text-align:center;margin-top:6px;color:#aeb9c9;font-size:.67rem;letter-spacing:.28em;text-transform:uppercase
+}
+.enter{
+  display:block;margin:22px auto 0;width:min(460px,86vw);border:1px solid rgba(233,189,103,.8);
+  background:rgba(8,15,27,.76);border-radius:999px;padding:18px 24px;
+  font-size:.95rem;letter-spacing:.18em;text-transform:uppercase;box-shadow:0 0 22px rgba(233,189,103,.12)
+}
+.enter:hover{box-shadow:0 0 28px rgba(233,189,103,.22)}
+.message{
+  text-align:center;margin:16px auto 0;max-width:720px;color:#f0efe9;
+  font-family:Georgia,"Times New Roman",serif;font-size:1.15rem;line-height:1.55;min-height:2.5em;opacity:0;transition:.6s
+}
+.message.show{opacity:1}
+
+.utility-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+.card-btn{
+  border:1px solid rgba(183,201,224,.23);background:rgba(8,16,28,.42);border-radius:24px;padding:19px 22px;
+  display:flex;align-items:center;gap:18px;text-align:left;min-height:84px
+}
+.card-btn .icon{font-size:1.8rem;color:#f2d59b;width:38px;text-align:center}
+.card-btn strong{display:block;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:5px}
+.card-btn span{font-family:Georgia,"Times New Roman",serif;color:#cbd5e3;font-size:.9rem}
+
+.quote-card{
+  margin:38px 0 28px;border:1px solid rgba(183,201,224,.22);border-radius:24px;min-height:190px;
+  padding:30px 34px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+  background:
+   linear-gradient(180deg,rgba(10,18,31,.76),rgba(9,16,27,.8)),
+   radial-gradient(circle at 78% 80%,rgba(101,85,133,.22),transparent 24%);
+  position:relative;overflow:hidden
+}
+.quote-card::after{
+ content:"";position:absolute;inset:auto 0 0 0;height:55%;
+ background:linear-gradient(165deg,transparent 0 48%,rgba(8,10,16,.92) 49% 100%);
+ opacity:.9
+}
+.quote{position:relative;z-index:1;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:1.18rem;line-height:1.45;max-width:520px}
+.quote-brand{position:relative;z-index:1;text-align:right;color:#b9c5d5}
+.quote-brand strong{display:block;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase}
+.quote-brand span{font-family:Georgia,"Times New Roman",serif;font-size:.85rem}
+.footer{display:flex;justify-content:space-between;align-items:center;padding:28px 0 34px;color:#98a5b7;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase}
+
+.panel{
+  position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));height:min(72svh,680px);
+  background:var(--panel2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(190,207,229,.2);border-radius:22px;z-index:40;display:flex;flex-direction:column;
+  transform:translateY(115%);opacity:0;transition:.5s;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.5)
+}
+.panel.open{transform:translateY(0);opacity:1}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.panel-head h2{margin:0;font-size:.9rem;letter-spacing:.18em;text-transform:uppercase}
+.close{border:1px solid rgba(255,255,255,.2);background:none;border-radius:999px;padding:9px 14px}
+.panel-body{overflow:auto;padding:8px 20px 24px;font-size:.92rem;line-height:1.65;color:#d8dfeb}
+.panel-body strong{color:#fff}
+.settings-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.toggle{border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:8px 12px;background:none}
+
+.experience-disabled .node{pointer-events:none}
+.experience-disabled .prompt,.experience-disabled .subprompt{opacity:.88}
+
+@media(max-width:1024px){
+  .experience-grid{grid-template-columns:150px minmax(0,1fr) 150px;gap:12px}
+  .side-note{font-size:.84rem}
+}
+
+@media(max-width:860px){
+  .wrapper{width:min(100% - 28px,760px)}
+  .nav a{display:none}
+  .topbar{align-items:center;padding-top:max(18px,env(safe-area-inset-top))}
+  .hero{padding-top:24px}
+  .hero h1{
+    font-size:clamp(2.35rem,9.4vw,4.8rem);
+    letter-spacing:.065em;
+    line-height:1;
+    white-space:nowrap;
+  }
+  .kicker{max-width:34rem;margin-inline:auto;line-height:1.55}
+  .experience-grid{grid-template-columns:1fr}
+  .side-note{display:none}
+  .world-wrap{width:100%;overflow:visible}
+  .world{width:min(86vw,560px,100%)}
+  .utility-grid{grid-template-columns:1fr}
+  .quote-card{align-items:flex-start;flex-direction:column}
+  .quote-brand{text-align:left}
+}
+
+@media(max-width:600px){
+  .wrapper{width:calc(100% - 28px)}
+  .topbar{padding-top:max(16px,env(safe-area-inset-top));gap:12px}
+  .brand{font-size:.67rem;letter-spacing:.22em}
+  .nav{gap:14px}
+  .sound{width:42px;height:42px}
+  .hero{padding:28px 0 8px}
+  .kicker{font-size:.64rem;letter-spacing:.23em;padding-inline:4px}
+  .hero h1{
+    margin-top:18px;
+    font-size:clamp(2.15rem,9.1vw,3.45rem);
+    letter-spacing:.045em;
+    transform:none;
+  }
+  .tagline{font-size:1.08rem;margin-top:18px}
+  .experience-shell{margin-top:18px}
+  .world{width:min(88vw,500px,100%)}
+  .prompt{font-size:1.03rem;padding-inline:4px}
+  .subprompt{font-size:.60rem;letter-spacing:.24em;line-height:1.5;padding-inline:8px}
+  .message{font-size:1.02rem;padding-inline:8px}
+  .enter{width:100%;max-width:460px;padding:15px 18px;font-size:.78rem;letter-spacing:.15em}
+  .card-btn{border-radius:20px;padding:18px 20px;min-height:78px}
+  .quote-card{padding:24px 22px;border-radius:20px}
+  .quote{font-size:1.08rem}
+  .footer{gap:18px;flex-wrap:wrap;padding-bottom:max(30px,env(safe-area-inset-bottom))}
+  .panel{height:min(76svh,680px)}
+}
+
+@media(max-width:420px){
+  .wrapper{width:calc(100% - 22px)}
+  .brand{font-size:.61rem;letter-spacing:.19em}
+  .nav button:not(.sound){font-size:.62rem;letter-spacing:.18em}
+  .sound{width:40px;height:40px}
+  .hero h1{
+    font-size:clamp(1.95rem,8.75vw,2.55rem);
+    letter-spacing:.025em;
+  }
+  .tagline{font-size:1rem}
+  .kicker{font-size:.59rem;letter-spacing:.20em}
+  .world{width:min(92vw,440px,100%)}
+  .node{width:52px;height:52px}
+  .prompt{font-size:.98rem}
+  .subprompt{font-size:.57rem;letter-spacing:.20em}
+  .card-btn{gap:14px;padding:16px 17px}
+  .card-btn .icon{font-size:1.55rem;width:32px}
+  .card-btn strong{font-size:.68rem}
+  .card-btn span{font-size:.85rem}
+  .quote-card{padding:22px 18px}
+  .quote{font-size:1rem}
+  .footer{font-size:.52rem;letter-spacing:.15em}
+  .panel{left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));height:min(78svh,680px)}
+  .panel-head{padding:15px 16px}
+  .panel-body{padding:6px 16px 20px}
+}
+
+@media(max-width:340px){
+  .hero h1{font-size:1.82rem;letter-spacing:.01em}
+  .brand{font-size:.56rem}
+  .nav button:not(.sound){display:none}
+  .kicker{font-size:.55rem}
+}
+
+@media(max-height:600px) and (orientation:landscape){
+  .hero{padding-top:12px}
+  .experience-shell{margin-top:10px}
+  .world{width:min(52vh,480px)}
+  .utility-grid{margin-top:22px}
+  .quote-card{margin-top:24px}
+}
+
+body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{
+  animation-duration:.001ms!important;
+  animation-iteration-count:1!important;
+  transition-duration:.001ms!important;
+}
+@media(prefers-reduced-motion:reduce){
+ *{scroll-behavior:auto!important}
+ *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+
+/* --- Son : pictogramme explicite --- */
+.sound-icon{
+  width:30px;
+  height:30px;
+  display:block;
+}
+.sound-off-x{ display:none; }
+
+/* état désactivé / muet */
+button[aria-pressed="false"] .sound-on-waves,
+button[data-sound="off"] .sound-on-waves,
+button[data-muted="true"] .sound-on-waves,
+.is-muted .sound-on-waves{ display:none; }
+
+button[aria-pressed="false"] .sound-off-x,
+button[data-sound="off"] .sound-off-x,
+button[data-muted="true"] .sound-off-x,
+.is-muted .sound-off-x{ display:inline; }
+
+/* état activé */
+button[aria-pressed="true"] .sound-on-waves,
+button[data-sound="on"] .sound-on-waves,
+button[data-muted="false"] .sound-on-waves{ display:inline; }
+
+button[aria-pressed="true"] .sound-off-x,
+button[data-sound="on"] .sound-off-x,
+button[data-muted="false"] .sound-off-x{ display:none; }
+
+
+/* état audio fiable : le SVG reste en place, seule sa partie visible change */
+.sound-icon .sound-on-waves{display:none}
+.sound-icon .sound-off-x{display:inline}
+
+#soundBtn[aria-pressed="true"] .sound-on-waves,
+#soundBtn[data-sound="on"] .sound-on-waves{display:inline}
+#soundBtn[aria-pressed="true"] .sound-off-x,
+#soundBtn[data-sound="on"] .sound-off-x{display:none}
+
+#soundBtn[aria-pressed="false"] .sound-on-waves,
+#soundBtn[data-sound="off"] .sound-on-waves{display:none}
+#soundBtn[aria-pressed="false"] .sound-off-x,
+#soundBtn[data-sound="off"] .sound-off-x{display:inline}
+
+
+/* Correctif final : l'icône audio ne doit pas hériter du positionnement des SVG de l'œuvre */
+#soundBtn{
+  position:relative;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+#soundBtn .sound-icon{
+  position:static !important;
+  inset:auto !important;
+  left:auto !important;
+  top:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  width:26px !important;
+  height:26px !important;
+  max-width:none !important;
+  display:block !important;
+  overflow:visible !important;
+  transform:none !important;
+}
+#soundBtn .sound-icon path,
+#soundBtn .sound-icon g{
+  vector-effect:non-scaling-stroke;
+}
+
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header class="topbar">
+    <div class="brand">ZÉPHYR AVENEL<br>RÉCITS VIVANTS</div>
+    <nav class="nav" aria-label="Navigation">
+      <a href="#apropos">À propos</a>
+      <a href="#aide">Aide</a>
+      <a href="#experience">Expérience</a>
+      <button id="openNoteTop">Note</button>
+      <button class="sound" id="soundBtn" aria-label="Activer ou couper le son" aria-pressed="false" title="Activer le son" data-sound="off"><svg class="sound-icon" viewBox="0 0 32 32" aria-hidden="true">
+  <path d="M5 13h5l7-6v18l-7-6H5z" fill="currentColor"/>
+  <g class="sound-on-waves" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M21 12c2.2 2.2 2.2 5.8 0 8"/>
+    <path d="M24.5 8.5c4.1 4.1 4.1 10.9 0 15"/>
+  </g>
+  <g class="sound-off-x" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+    <path d="M21 12l7 8"/>
+    <path d="M28 12l-7 8"/>
+  </g>
+</svg></button>
+    </nav>
+  </header>
+
+  <section class="hero" id="apropos">
+    <div class="kicker">Récits Vivants · Recherche expérimentale 001</div>
+    <h1>RECOMPOSITION</h1>
+    <p class="tagline">Ce qui se répète laisse une trace.</p>
+  </section>
+
+  <section class="experience-shell experience-disabled" id="experience">
+    <div class="experience-grid">
+      <div class="side-note left top">
+        <span class="label blue">Explorer</span>
+        Chaque geste<br>ouvre une possibilité.
+      </div>
+
+      <div class="world-wrap">
+        <div class="world" id="world">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <path id="oldPath" class="path old" d="M50 54 Q64 42 78 31"/>
+            <path id="altPath" class="path alt" d="M50 54 Q39 61 28 72"/>
+            <path id="mix1" class="path mix" d="M28 72 Q43 82 70 78"/>
+            <path id="mix2" class="path mix" d="M28 72 Q18 50 25 27"/>
+            <path id="mix3" class="path mix" d="M25 27 Q49 18 78 31"/>
+          </svg>
+          <button class="node n0" id="origin" aria-label="Présence centrale"></button>
+          <button class="node n1 dim" id="oldNode" aria-label="Présence familière"></button>
+          <button class="node n2 dim hiddenish" id="south" aria-label="Présence"></button>
+          <button class="node n3 alt hiddenish" id="difference" aria-label="Présence différente"></button>
+          <button class="node n4 blue dim hiddenish" id="north" aria-label="Présence"></button>
+          <div class="echo" id="echo"></div>
+          <div class="afterglow" id="afterglow"></div>
+        </div>
+      </div>
+
+      <div class="side-note right top">
+        <span class="label gold">Observer</span>
+        Les relations<br>se transforment.
+      </div>
+
+      <div class="side-note left bottom">
+        <span class="label violet">Ressentir</span>
+        Il n’y a pas de bonne réponse,<br>seulement une histoire qui se construit.
+      </div>
+      <div></div>
+      <div class="side-note right bottom">
+        <span class="label gold">Revenir</span>
+        Ce qui s’efface peut<br>encore laisser une trace.
+      </div>
+    </div>
+
+    <div class="prompt" id="prompt">Le même geste peut rencontrer une autre suite.</div>
+    <div class="subprompt" id="subprompt">Touchez une présence pour commencer</div>
+    <button class="enter" id="enterBtn">Entrer dans l’expérience&nbsp;&nbsp;⟶</button>
+    <div class="message" id="message" aria-live="polite"></div>
+  </section>
+
+  <section class="utility-grid" id="aide">
+    <button class="card-btn" id="researchBtn">
+      <div class="icon">▤</div><div><strong>Note de recherche</strong><span>Comprendre sans être interrompu</span></div>
+    </button>
+    <button class="card-btn" id="restartBtn">
+      <div class="icon">↻</div><div><strong>Recommencer</strong><span>Une nouvelle traversée</span></div>
+    </button>
+    <button class="card-btn" id="settingsBtn">
+      <div class="icon">⚙</div><div><strong>Paramètres</strong><span>Son, accessibilité, etc.</span></div>
+    </button>
+  </section>
+
+  <section class="quote-card">
+    <div class="quote">« Rien n’est définitivement fixé.<br>Chaque histoire en transforme d’autres. »</div>
+    <div class="quote-brand"><strong>Les Récits Vivants</strong><span>Explorer · Relier · Habiter autrement</span></div>
+  </section>
+
+  <footer class="footer">
+    <div>Version publique · définitive</div>
+    <div>Zéphyr Avenel · 2026</div>
+  </footer>
+</div>
+
+<aside class="panel" id="notePanel" aria-hidden="true">
+  <div class="panel-head"><h2>Trace de cette traversée</h2><button class="close" data-close="notePanel">fermer</button></div>
+  <div class="panel-body">
+    <p id="traceText">L’expérience n’a pas encore commencé.</p>
+    <p><strong>Question de recherche :</strong> la répétition d’une différence peut-elle modifier les relations qui déterminent les gestes futurs&nbsp;?</p>
+    <p>RECOMPOSITION explore une mémoire concurrente : renforcer une relation ne laisse pas nécessairement toutes les autres intactes. Certaines s’affaiblissent, deviennent latentes, puis peuvent réapparaître lorsqu’elles sont de nouveau sollicitées.</p>
+    <p><strong>Modèle :</strong> geste → trace → répétition → concurrence → affaiblissement → recomposition → réactivation possible.</p>
+    <p>Les intensités visibles ne sont pas des compteurs. Elles manifestent qualitativement un rapport mouvant entre traces actives et traces latentes.</p>
+    <p>Cette expérience ne cherche pas à reproduire un mécanisme biologique. Elle explore comment une histoire peut modifier la manière dont un système répond à ce qui lui arrive ensuite.</p>
+  </div>
+</aside>
+
+<aside class="panel" id="settingsPanel" aria-hidden="true">
+  <div class="panel-head"><h2>Paramètres</h2><button class="close" data-close="settingsPanel">fermer</button></div>
+  <div class="panel-body">
+    <div class="settings-row"><span>Son discret</span><button class="toggle" id="soundToggle">désactivé</button></div>
+    <div class="settings-row"><span>Mouvements réduits</span><button class="toggle" id="motionToggle">auto</button></div>
+    <p>Le son accompagne certains événements de l’expérience ; il n’est pas continu. Cette version fonctionne entièrement dans votre navigateur, sans formulaire, sans compte et sans suivi.</p>
+  </div>
+</aside>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const world=$('world'), origin=$('origin'), oldNode=$('oldNode'), difference=$('difference'),
+south=$('south'), north=$('north'), oldPath=$('oldPath'), altPath=$('altPath'), mix1=$('mix1'),
+mix2=$('mix2'), mix3=$('mix3'), echo=$('echo'), afterglow=$('afterglow'),
+prompt=$('prompt'), subprompt=$('subprompt'), message=$('message'), enterBtn=$('enterBtn'),
+traceText=$('traceText'), notePanel=$('notePanel'), settingsPanel=$('settingsPanel'),
+soundBtn=$('soundBtn'), soundToggle=$('soundToggle');
+
+let h={old:0,new:0,alternate:0};
+let latent={old:0,new:0,alternate:0};
+let actions=[], revealed=false, last=null, streak=0, locked=false, milestones=0, started=false;
+let soundOn=false;
+let audioCtx=null;
+let masterGain=null;
+
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function ensureAudio(){
+ if(!soundOn)return null;
+ try{
+   const A=window.AudioContext||window.webkitAudioContext;
+   if(!A)return null;
+   if(!audioCtx){
+     audioCtx=new A();
+     masterGain=audioCtx.createGain();
+     masterGain.gain.value=.9;
+     masterGain.connect(audioCtx.destination);
+   }
+   if(audioCtx.state==='suspended'){
+     audioCtx.resume().catch(()=>{});
+   }
+   return audioCtx;
+ }catch(e){
+   return null;
+ }
+}
+
+function ping(freq=420,dur=.09){
+ if(!soundOn)return;
+ const ctx=ensureAudio();
+ if(!ctx||!masterGain)return;
+ try{
+   const now=ctx.currentTime+.01;
+   const o=ctx.createOscillator();
+   const g=ctx.createGain();
+   o.type='sine';
+   o.frequency.setValueAtTime(freq,now);
+   g.gain.setValueAtTime(.0001,now);
+   g.gain.exponentialRampToValueAtTime(.038,now+.012);
+   g.gain.exponentialRampToValueAtTime(.0001,now+dur);
+   o.connect(g);
+   g.connect(masterGain);
+   o.start(now);
+   o.stop(now+dur+.03);
+   o.onended=()=>{
+     try{o.disconnect();g.disconnect()}catch(e){}
+   };
+ }catch(e){}
+}
+function pulse(n){n.classList.remove('pulse');void n.offsetWidth;n.classList.add('pulse');setTimeout(()=>n.classList.remove('pulse'),800)}
+function msg(t,ms=1800){message.textContent=t;message.classList.add('show');if(ms)setTimeout(()=>{if(message.textContent===t)message.classList.remove('show')},ms)}
+function leaveAfterglow(x,y,color,w){
+ afterglow.style.left=x+'%';afterglow.style.top=y+'%';afterglow.style.background=color;afterglow.style.boxShadow=`0 0 ${14+Math.min(w,7)*4}px ${color}`;
+ afterglow.style.opacity=String(.08+Math.min(w,7)*.035);afterglow.style.transition='none';
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{afterglow.style.transition=`opacity ${1+Math.min(w,7)*.28}s ease`;afterglow.style.opacity='0'}))
+}
+function travel(x1,y1,x2,y2,color,w=1){
+ const delay=Math.max(50,260-Math.min(w,7)*27),duration=Math.max(.42,.78-Math.min(w,7)*.035);
+ echo.style.left=x1+'%';echo.style.top=y1+'%';echo.style.color=color;echo.style.background=color;echo.style.opacity='0';echo.style.transition='none';
+ setTimeout(()=>{echo.style.opacity='1';requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  echo.style.transition=`left ${duration}s cubic-bezier(.2,.7,.2,1),top ${duration}s cubic-bezier(.2,.7,.2,1),opacity .22s linear ${Math.max(.25,duration-.16)}s`;
+  echo.style.left=x2+'%';echo.style.top=y2+'%';echo.style.opacity='0';
+  setTimeout(()=>leaveAfterglow(x2,y2,color,w),duration*760)
+ }))},delay)
+}
+function setPath(el,w,max=.58,ghost=0){
+ const v=clamp(w/7,0,max),floor=clamp(ghost/22,0,.07);
+ el.style.opacity=(.025+floor+v).toFixed(3);el.style.strokeWidth=(.9+v*2.6).toFixed(2);
+ el.style.filter=v>.28?'drop-shadow(0 0 7px currentColor)':'none'
+}
+function render(){
+ setPath(oldPath,h.old,.58,latent.old);setPath(altPath,h.new,.58,latent.new);
+ const mix=Math.min(h.old,h.new)+h.alternate*.8;
+ setPath(mix1,mix,.24,latent.alternate);setPath(mix2,h.alternate,.22,latent.alternate);setPath(mix3,h.alternate,.22,latent.alternate);
+ if(h.new>=1.7){difference.classList.remove('hiddenish');difference.classList.add('available')}
+ if(h.alternate>=1.7){north.classList.remove('hiddenish');south.classList.remove('hiddenish');north.classList.add('available');south.classList.add('available')}
+}
+function compete(chosen){
+ for(const k of ['old','new','alternate'].filter(k=>k!==chosen)){
+   const pressure=chosen==='new'&&k==='old'?.16:chosen==='old'&&k==='new'?.13:.085;
+   const loss=Math.min(h[k],pressure);h[k]=Math.max(0,h[k]-loss);latent[k]=Math.min(8,latent[k]+loss*.82)
+ }
+}
+function reactivate(kind){
+ if(h[kind]<1.35&&latent[kind]>.42){
+   const r=Math.min(.9,latent[kind]*.46);h[kind]+=r;latent[kind]-=r*.62;msg('Une ancienne trace répond encore.',1800);return true
+ }
+ return false
+}
+function register(kind){
+ reactivate(kind);
+ if(last===kind)streak++;else{if(last&&last!==kind)h.alternate+=.48;streak=1}
+ last=kind;actions.push(kind);compete(kind);
+ if(kind==='old')h.old+=.82+Math.min(streak-1,2)*.15;
+ if(kind==='new')h.new+=.82+Math.min(streak-1,2)*.15;
+ if(kind==='alternate')h.alternate+=.72;
+ if(actions.length>=3&&!revealed){revealed=true;difference.classList.remove('hiddenish');difference.classList.add('available');prompt.textContent='Une autre présence devient accessible.'}
+ render();checkMilestone()
+}
+function response(){
+ const o=h.old,n=h.new,a=h.alternate;
+ if(n>o+1.1){travel(50,54,28,72,'var(--violet)',h.new);setTimeout(()=>pulse(difference),560);ping(540);return'new'}
+ if(a>=2.1&&Math.abs(o-n)<2.3){const t=actions.length%2===0?north:south,xy=t===north?[25,27]:[70,78];travel(50,54,xy[0],xy[1],'var(--blue)',h.alternate);setTimeout(()=>pulse(t),560);ping(620);return'mix'}
+ travel(50,54,78,31,'var(--gold)',h.old);setTimeout(()=>pulse(oldNode),560);ping(420);return'old'
+}
+function classify(){
+ if(h.old>h.new+2&&h.old>h.alternate+1)return'deep';
+ if(h.new>h.old+1.2&&h.new>h.alternate)return'shift';
+ if(h.alternate>=2.5||Math.abs(h.old-h.new)<=1.5)return'mesh';
+ return'fragile'
+}
+function checkMilestone(){
+ const total=h.old+h.new+h.alternate,threshold=9.5+milestones*7,dom=Math.max(h.old,h.new,h.alternate);
+ if(total>=threshold&&dom>=4&&!locked){locked=true;setTimeout(stabilize,750)}
+}
+function stabilize(){
+ milestones++;locked=false;const c=classify();let t='',trace='';
+ if(c==='deep'){t='Le sentier s’est approfondi.';trace='Vous avez surtout renforcé la relation initiale. La différence est apparue, mais l’histoire accumulée rend encore l’ancienne réponse plus accessible. Les autres relations se sont affaiblies sans être nécessairement effacées.'}
+ else if(c==='shift'){t='Même geste. Autre suite.';trace='La différence a été suffisamment répétée pour modifier la réponse du geste initial. Les éléments n’ont presque pas changé ; leur relation historique, elle, s’est recomposée. L’ancien sentier peut devenir latent sans disparaître entièrement.'}
+ else if(c==='mesh'){t='Le monde ne répond plus par un seul chemin.';trace='Vous avez alterné ou relié plusieurs gestes. Aucun sentier n’a entièrement remplacé l’autre : un réseau de possibilités concurrentes s’est constitué.'}
+ else{t='Quelque chose a bougé sans encore se stabiliser.';trace='La traversée a produit une variation durable mais pas un nouveau sentier clairement dominant. La recomposition demeure fragile et partiellement réversible.'}
+ traceText.textContent=trace;msg(t,2400);
+ setTimeout(()=>{prompt.textContent='Ce qui s’efface peut encore laisser une trace.';subprompt.textContent='Continuez, si vous voulez voir ce que cette histoire peut encore devenir.'},2300)
+}
+function startExperience(){
+ if(started)return;started=true;
+ document.querySelector('.experience-shell').classList.remove('experience-disabled');
+ enterBtn.style.display='none';
+ prompt.textContent='Touchez ce qui appelle.';
+ subprompt.textContent='Il n’y a pas de bonne réponse.';
+ origin.classList.add('available');oldNode.classList.add('available');
+}
+origin.addEventListener('click',()=>{if(!started||locked)return;pulse(origin);const r=response();register('old');if(actions.length===1)msg('Une réponse.',1200);else if(r==='old')msg('L’ancien chemin conserve sa force.',1600);else if(r==='new')msg('Le même geste rencontre maintenant une autre suite.',1900);else msg('La réponse ne suit plus un seul sentier.',1800)});
+difference.addEventListener('click',()=>{if(!started||locked||!revealed)return;pulse(difference);travel(28,72,50,54,'var(--violet)',h.new);register('new');ping(520);if(h.new<h.old)msg('La différence insiste contre une histoire plus ancienne.',1800);else if(h.new>h.old+1)msg('Ce qui était variation commence à faire histoire.',1900);else msg('Deux histoires se disputent la suite.',1700)});
+north.addEventListener('click',()=>{if(!started||locked||!north.classList.contains('available'))return;pulse(north);register('alternate');ping(650);msg('Une relation latérale apparaît.',1500)});
+south.addEventListener('click',()=>{if(!started||locked||!south.classList.contains('available'))return;pulse(south);register('alternate');ping(580);msg('Le monde commence à se réorganiser entre les gestes.',1800)});
+enterBtn.addEventListener('click',startExperience);
+
+function restart(){
+ h={old:0,new:0,alternate:0};latent={old:0,new:0,alternate:0};actions=[];revealed=false;last=null;streak=0;locked=false;milestones=0;started=false;
+ difference.className='node n3 alt hiddenish';north.className='node n4 blue dim hiddenish';south.className='node n2 dim hiddenish';origin.className='node n0';oldNode.className='node n1 dim';
+ document.querySelector('.experience-shell').classList.add('experience-disabled');enterBtn.style.display='block';prompt.textContent='Le même geste peut rencontrer une autre suite.';subprompt.textContent='Touchez une présence pour commencer';message.classList.remove('show');message.textContent='';traceText.textContent='L’expérience n’a pas encore commencé.';render();window.scrollTo({top:document.getElementById('experience').offsetTop-20,behavior:'smooth'})
+}
+function openPanel(p){p.classList.add('open');p.setAttribute('aria-hidden','false')}
+function closePanel(p){p.classList.remove('open');p.setAttribute('aria-hidden','true')}
+$('researchBtn').addEventListener('click',()=>openPanel(notePanel));
+$('openNoteTop').addEventListener('click',()=>openPanel(notePanel));
+$('settingsBtn').addEventListener('click',()=>openPanel(settingsPanel));
+$('restartBtn').addEventListener('click',restart);
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closePanel($(b.dataset.close))));
+function toggleSound(){
+  soundOn = !soundOn;
+  soundToggle.textContent = soundOn ? 'activé' : 'désactivé';
+  soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+  soundBtn.setAttribute('data-sound', soundOn ? 'on' : 'off');
+  soundBtn.setAttribute('aria-label', soundOn ? 'Désactiver le son' : 'Activer le son');
+  soundBtn.setAttribute('title', soundOn ? 'Désactiver le son' : 'Activer le son');
+
+  if(soundOn){
+    ensureAudio();
+    if(audioCtx && audioCtx.state==='suspended'){
+      audioCtx.resume().then(()=>ping(440,.09)).catch(()=>{});
+    }else{
+      ping(440,.09);
+    }
+  }
+}
+soundBtn.addEventListener('click',toggleSound);soundToggle.addEventListener('click',toggleSound);
+$('motionToggle').addEventListener('click',e=>{const reduced=document.body.classList.toggle('reduce-motion');e.currentTarget.textContent=reduced?'réduits':'auto';});
+
+document.addEventListener('pointerdown',()=>{
+  if(soundOn && audioCtx && audioCtx.state==='suspended'){
+    audioCtx.resume().catch(()=>{});
+  }
+},{passive:true});
+
+render();
+})();
+</script>
+</body>
+</html>
