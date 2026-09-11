@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1415">
+<title>APRÈS LE REGARD — V6</title>
+<style>
+:root{
+  --bg:#0b1415;
+  --ink:#f1eee6;
+  --muted:#9eaaa6;
+  --gold:#d3b676;
+  --moss:#789079;
+  --line:rgba(255,255,255,.105);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink)}
+body{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 50% -8%,rgba(120,144,121,.17),transparent 31%),
+    linear-gradient(180deg,#111c1d 0%,#0b1415 64%,#080d0e 100%);
+}
+main{
+  width:min(100%,800px);
+  min-height:100dvh;
+  margin:auto;
+  padding:clamp(36px,7vw,72px) 20px 76px;
+}
+.scene{display:none;animation:fade .65s ease both}
+.scene.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.kicker{
+  font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:18px
+}
+h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif;font-weight:500}
+h1{font-size:clamp(3rem,13vw,6.3rem);line-height:.93;letter-spacing:-.045em;margin:0 0 22px}
+h1 small{display:block;font-size:.3em;line-height:1.35;letter-spacing:.01em;color:#d9ded9;margin-top:15px}
+h2{font-size:clamp(2rem,8vw,3.5rem);line-height:1.08;margin:.2em 0 .6em}
+h3{font-size:1.36rem;margin:0 0 .75em}
+.lead{font:1.28rem/1.6 Georgia,"Times New Roman",serif;max-width:35ch;color:#e8e4db}
+.rule{height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin:30px 0}
+button{
+  width:100%;appearance:none;text-align:left;padding:17px;border-radius:17px;
+  border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--ink);
+  font:inherit;line-height:1.42;cursor:pointer;transition:.18s ease
+}
+button:hover,button:focus-visible{
+  outline:none;border-color:rgba(211,182,118,.52);
+  background:rgba(211,182,118,.075);transform:translateY(-1px)
+}
+button strong{display:block;font:1.06rem/1.34 Georgia,"Times New Roman",serif;margin-bottom:4px}
+.small{font-size:.82rem;color:var(--muted)}
+.choices{display:grid;gap:11px}
+.progress{display:flex;gap:6px;margin-bottom:30px}
+.progress i{height:2px;flex:1;background:rgba(255,255,255,.095)}
+.progress i.done{background:var(--gold)}
+
+.stage{
+  position:relative;height:345px;margin:26px 0 12px;overflow:hidden;
+  border-radius:26px;border:1px solid var(--line);
+  background:
+    radial-gradient(circle at 50% 14%,rgba(211,182,118,.035),transparent 27%),
+    linear-gradient(180deg,rgba(255,255,255,.02),rgba(120,144,121,.055));
+}
+.water{
+  position:absolute;left:0;right:0;bottom:0;height:34%;
+  background:
+    repeating-radial-gradient(ellipse at center,rgba(255,255,255,.035) 0 1px,transparent 2px 13px),
+    linear-gradient(180deg,rgba(120,144,121,.035),rgba(120,144,121,.10));
+  opacity:.58
+}
+.stone{
+  position:absolute;width:92px;height:30px;border-radius:50%;
+  background:rgba(215,215,196,.145);border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 8px 20px rgba(0,0,0,.16);
+  transition:transform .5s ease,opacity .5s ease
+}
+.stone.s1{left:11%;bottom:52px}
+.stone.s2{left:39%;bottom:109px}
+.stone.s3{right:11%;bottom:165px}
+.stone.unstable{animation:wobble .68s ease 2}
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(3deg)}75%{transform:rotate(-3deg)}}
+
+.frog{
+  position:absolute;left:15%;bottom:80px;width:72px;height:64px;
+  transition:left .7s ease,bottom .7s ease,transform .45s ease,opacity .5s ease
+}
+.frog svg{width:100%;height:100%;filter:drop-shadow(0 8px 10px rgba(0,0,0,.22))}
+.frog.jump{transform:translateY(-17px) scale(1.025)}
+
+.voice{
+  position:absolute;max-width:176px;padding:8px 11px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.09);background:rgba(8,13,14,.60);
+  color:#e7e3da;font:italic .92rem/1.25 Georgia,"Times New Roman",serif;
+  opacity:0;transform:translateY(8px);animation:voiceIn .8s ease forwards;
+  backdrop-filter:blur(5px)
+}
+.voice.v1{top:28px;left:8%;animation-delay:.35s}
+.voice.v2{top:78px;right:7%;animation-delay:1.05s}
+.voice.v3{top:145px;left:18%;animation-delay:1.75s}
+@keyframes voiceIn{to{opacity:1;transform:none}}
+.voice.fade{animation:voiceOut .65s ease forwards}
+@keyframes voiceOut{to{opacity:0;transform:translateY(-8px)}}
+
+.prompt{font:1.25rem/1.52 Georgia,"Times New Roman",serif;margin:32px 0 16px}
+.consequence{
+  display:none;margin-top:18px;padding:18px;border-radius:17px;
+  border:1px solid rgba(211,182,118,.15);background:rgba(211,182,118,.05);
+  animation:fade .55s ease both
+}
+.consequence.on{display:block}
+.card{
+  border:1px solid var(--line);border-radius:24px;padding:22px;
+  background:linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.02));
+  box-shadow:0 22px 55px rgba(0,0,0,.24)
+}
+.path{border-left:2px solid var(--moss);padding:4px 0 4px 18px;margin:22px 0}
+.path p{line-height:1.6}
+.void{text-align:center;padding:12vh 0 3vh}
+.void p{font:clamp(1.25rem,5vw,1.8rem)/1.75 Georgia,"Times New Roman",serif;margin:.2em 0}
+.dim{color:#88948f}
+.delay{opacity:0;transition:opacity .8s ease}
+.delay.show{opacity:1}
+.actions{display:grid;gap:11px;margin-top:28px}
+.actions button{text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:1.05rem}
+.trace{display:grid;gap:8px;margin-top:18px}
+.trace div{
+  padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.02);font-size:.87rem;color:#d8ddd9
+}
+.center{text-align:center}
+.note{margin-top:27px;font-size:.84rem;line-height:1.65;color:var(--muted)}
+.signature{font-family:Georgia,"Times New Roman",serif;font-style:italic;color:#d6c099}
+.threshold-words{
+  display:flex;flex-direction:column;gap:7px;margin:25px 0 4px;
+  font:1.05rem/1.45 Georgia,"Times New Roman",serif;color:#d8ddd8
+}
+.threshold-echo{
+  color:var(--muted);font:1.02rem/1.7 Georgia,"Times New Roman",serif;
+  margin:8px 0 0
+}
+.threshold-question{
+  margin:34px 0 24px;padding:20px;border-left:2px solid var(--gold);
+  background:rgba(211,182,118,.045);
+  font:1.15rem/1.6 Georgia,"Times New Roman",serif
+}
+.more{
+  margin-top:30px;border-top:1px solid var(--line);padding-top:22px
+}
+.more button{background:transparent}
+.more-content{
+  display:none;margin-top:15px;padding:20px;border-radius:18px;
+  border:1px solid var(--line);background:rgba(255,255,255,.025)
+}
+.more-content.on{display:block;animation:fade .55s ease both}
+.more-content p{line-height:1.65}
+
+@media(min-width:700px){
+  .choices.three,.actions{grid-template-columns:repeat(3,1fr)}
+  .choices.three button{min-height:154px}
+}
+</style>
+</head>
+<body>
+<main>
+
+<section id="intro" class="scene on">
+  <div class="kicker">Les Récits Vivants · Expérience</div>
+  <h2>Avant le regard</h2>
+
+  <p class="lead">Nous faisons tous des gestes sous le regard des autres.</p>
+
+  <div class="threshold-words" aria-label="Quelques gestes possibles">
+    <span>Dire quelque chose.</span>
+    <span>Commencer.</span>
+    <span>Refuser.</span>
+    <span>Créer.</span>
+    <span>Partir.</span>
+    <span>Continuer.</span>
+  </div>
+
+  <div class="rule"></div>
+
+  <p class="lead" style="font-size:1.08rem">
+    Puis viennent les réactions.
+  </p>
+  <p class="threshold-echo">Un encouragement.<br>Un silence.<br>Une objection.<br>Un jugement.</p>
+
+  <p class="lead" style="margin-top:30px">
+    Et parfois, presque sans nous en apercevoir,
+    <strong>ce regard commence à écrire la suite.</strong>
+  </p>
+
+  <div class="threshold-question">
+    Cette expérience explore ce qui se passe entre
+    <strong>ce que les autres nous renvoient</strong>
+    et <strong>ce que nous faisons ensuite.</strong>
+  </div>
+
+  <button onclick="go('s0')"><strong>ENTRER</strong></button>
+</section>
+
+<section id="s0" class="scene">
+  <div class="kicker">Objet narratif · Récits Vivants</div>
+  <h1>APRÈS<br>LE REGARD<small>La grenouille qui entendait</small></h1>
+  <p class="lead">On raconte qu’une grenouille atteignit un jour le sommet parce qu’elle était sourde aux voix qui annonçaient son échec.</p>
+
+  <div class="stage">
+    <div class="water"></div>
+    <div class="stone s1"></div><div class="stone s2"></div><div class="stone s3"></div>
+    <div class="frog">
+      <svg viewBox="0 0 120 100" aria-hidden="true">
+        <path d="M28 61 C18 48,20 34,33 27 C39 24,44 24,49 26 C53 17,67 17,71 26 C77 23,85 24,91 28 C103 36,103 50,94 60 C90 66,83 72,76 75 L44 75 C37 72,31 67,28 61Z" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="47" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="73" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <path d="M43 75 L28 88 M77 75 L92 88 M50 76 L44 92 M70 76 L76 92" stroke="#cfd8ce" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+  <p class="lead" style="font-size:1.06rem">Mais si elle avait pu entendre ?</p>
+  <button onclick="go('s1')"><strong>Commencer l’autre histoire</strong></button>
+</section>
+
+<section id="s1" class="scene">
+  <div class="progress"><i class="done"></i><i></i><i></i><i></i></div>
+  <div class="kicker">I · Les voix qui portent</div>
+  <h2>Au début, la foule encourage.</h2>
+
+  <div class="stage">
+    <div class="water"></div>
+    <div class="stone s1"></div><div class="stone s2"></div><div class="stone s3"></div>
+    <div class="frog">
+      <svg viewBox="0 0 120 100" aria-hidden="true">
+        <path d="M28 61 C18 48,20 34,33 27 C39 24,44 24,49 26 C53 17,67 17,71 26 C77 23,85 24,91 28 C103 36,103 50,94 60 C90 66,83 72,76 75 L44 75 C37 72,31 67,28 61Z" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="47" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="73" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <path d="M43 75 L28 88 M77 75 L92 88 M50 76 L44 92 M70 76 L76 92" stroke="#cfd8ce" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="voice v1">« Vas-y ! »</div>
+    <div class="voice v2">« Continue ! »</div>
+    <div class="voice v3">« Tu peux y arriver ! »</div>
+  </div>
+
+  <p class="prompt">Puis les voix cessent. Que devient le prochain saut ?</p>
+  <div class="choices three">
+    <button onclick="choice1='approval';showC1('approval')"><strong>J’attends qu’elles reviennent.</strong></button>
+    <button onclick="choice1='image';showC1('image')"><strong>Je saute pour rester celle qu’elles admiraient.</strong></button>
+    <button onclick="choice1='observe';showC1('observe')"><strong>Je regarde la pierre suivante.</strong></button>
+  </div>
+  <div id="c1" class="consequence"></div>
+</section>
+
+<section id="s2" class="scene">
+  <div class="progress"><i class="done"></i><i class="done"></i><i></i><i></i></div>
+  <div class="kicker">II · Les voix qui arrêtent</div>
+  <h2>Plus loin, les voix changent.</h2>
+
+  <div class="stage">
+    <div class="water"></div>
+    <div class="stone s1"></div><div class="stone s2"></div><div class="stone s3" id="unstable"></div>
+    <div class="frog" id="frog2" style="left:43%;bottom:137px">
+      <svg viewBox="0 0 120 100" aria-hidden="true">
+        <path d="M28 61 C18 48,20 34,33 27 C39 24,44 24,49 26 C53 17,67 17,71 26 C77 23,85 24,91 28 C103 36,103 50,94 60 C90 66,83 72,76 75 L44 75 C37 72,31 67,28 61Z" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="47" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="73" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <path d="M43 75 L28 88 M77 75 L92 88 M50 76 L44 92 M70 76 L76 92" stroke="#cfd8ce" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="voice v1">« C’est trop haut. »</div>
+    <div class="voice v2">« Tu vas tomber. »</div>
+    <div class="voice v3">« Arrête. »</div>
+  </div>
+
+  <p class="prompt">Que faites-vous de cette histoire ?</p>
+  <div class="choices three">
+    <button onclick="choice2='stop';showC2('stop')"><strong>Je m’arrête.</strong></button>
+    <button onclick="choice2='defy';showC2('defy')"><strong>Je saute justement parce qu’ils me disent d’arrêter.</strong></button>
+    <button onclick="choice2='check';showC2('check')"><strong>J’écoute — puis je regarde.</strong></button>
+  </div>
+  <div id="c2" class="consequence"></div>
+</section>
+
+<section id="s3" class="scene">
+  <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i></i></div>
+  <div class="kicker">III · Entendre</div>
+  <h2>Deux voix.</h2>
+
+  <div class="card">
+    <p class="serif" style="font-size:1.28rem">« Le rocher de gauche est instable. »</p>
+    <p>Vous regardez. Il bouge réellement.</p>
+    <div class="rule"></div>
+    <p class="serif" style="font-size:1.28rem">« Tu n’es pas faite pour ça. »</p>
+    <p>Vous regardez encore. Cette phrase ne vous apprend rien sur le chemin.</p>
+  </div>
+
+  <div class="path">
+    <p><strong>Entendre ne décide pas encore.</strong></p>
+  </div>
+
+  <button onclick="goSilent()"><strong>Continuer</strong></button>
+</section>
+
+<section id="s4" class="scene">
+  <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i></div>
+  <div class="kicker">IV · Sans preuve</div>
+
+  <div class="void">
+    <p>Il n’y a plus de foule.</p>
+    <p>Plus d’encouragement.</p>
+    <p>Plus d’adversaire.</p>
+    <p class="dim">Plus même le privilège d’être incompris.</p>
+    <div class="rule"></div>
+    <p>Devant vous : trois pierres.</p>
+    <p><strong>Personne ne vous dit où sauter.</strong></p>
+  </div>
+
+  <div class="stage" style="height:275px">
+    <div class="water"></div>
+    <div class="stone s1"></div><div class="stone s2"></div><div class="stone s3"></div>
+    <div class="frog">
+      <svg viewBox="0 0 120 100" aria-hidden="true">
+        <path d="M28 61 C18 48,20 34,33 27 C39 24,44 24,49 26 C53 17,67 17,71 26 C77 23,85 24,91 28 C103 36,103 50,94 60 C90 66,83 72,76 75 L44 75 C37 72,31 67,28 61Z" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="47" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <circle cx="73" cy="27" r="7" fill="none" stroke="#cfd8ce" stroke-width="3"/>
+        <path d="M43 75 L28 88 M77 75 L92 88 M50 76 L44 92 M70 76 L76 92" stroke="#cfd8ce" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <p id="q1" class="prompt delay">Que voyez-vous ?</p>
+  <div id="q2" class="actions delay">
+    <button onclick="finish('Sauter')">SAUTER</button>
+    <button onclick="finish('Observer davantage')">OBSERVER</button>
+    <button onclick="finish('Changer de chemin')">CHANGER DE CHEMIN</button>
+  </div>
+</section>
+
+<section id="s5" class="scene">
+  <div class="kicker">Après le regard</div>
+  <h2>La question n’était peut-être pas : « Faut-il écouter les autres ? »</h2>
+
+  <div class="card">
+    <p class="serif" style="font-size:1.35rem">La question était :</p>
+    <h3>« Qu’est-ce que je fais de ce que j’entends ? »</h3>
+
+    <div class="rule"></div>
+
+    <p><strong>Obéir :</strong> « Ils le disent, donc c’est vrai. »</p>
+    <p><strong>S’opposer :</strong> « Ils le disent, donc je ferai l’inverse. »</p>
+    <p><strong>Discerner :</strong> « Ils le disent. Qu’est-ce que cela m’apprend ? »</p>
+
+    <div class="trace" id="trace"></div>
+
+    <div class="path">
+      <p>Les autres peuvent avertir, soutenir, contredire.</p>
+      <p>Mais leur regard n’a pas à devenir la preuve qui décide de la suite.</p>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <p class="lead">Elle n’avait pas appris à ne plus entendre les autres.</p>
+  <p class="lead"><strong>Elle avait appris à ne pas leur abandonner son prochain saut.</strong></p>
+
+  <div class="more">
+    <button onclick="toggleMore()" aria-expanded="false" id="moreBtn">
+      <strong>Pour aller plus loin</strong>
+      <span class="small">Ouvrir la piste de recherche derrière l’expérience.</span>
+    </button>
+    <div id="moreContent" class="more-content">
+      <p>Cette expérience explore une hypothèse des Récits Vivants : un regard extérieur peut cesser d’être seulement une information lorsqu’il devient une <strong>preuve qui détermine l’histoire suivante.</strong></p>
+      <p><strong>Approbation :</strong> « Ils m’approuvent, donc je dois continuer. »</p>
+      <p><strong>Rejet :</strong> « Ils me rejettent, donc je dois avoir raison. »</p>
+      <p>Dans les deux cas, le regard reçu peut encore gouverner quelque chose du prochain geste.</p>
+      <p class="serif"><strong>Une autre possibilité :</strong> entendre, examiner, puis laisser la suite rester transformable.</p>
+    </div>
+  </div>
+
+  <div class="center" style="margin-top:24px">
+    <button onclick="restart()">Rejouer l’histoire</button>
+  </div>
+
+  <p class="note">
+    <span class="signature">Zéphyr Avenel · Les Récits Vivants</span><br>
+    Objet narratif expérimental.
+  </p>
+</section>
+
+</main>
+
+<script>
+let choice1=null, choice2=null, lastAction=null;
+
+function go(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showC1(type){
+  const box=document.getElementById('c1');
+  let text='';
+  if(type==='approval'){
+    text='Vous attendez. Rien ne revient. Le chemin n’a pas changé — seulement le silence autour de lui.';
+  }else if(type==='image'){
+    text='Vous sautez vite. Le geste tient. Pourtant, quelque chose du regard reste accroché au saut.';
+  }else{
+    text='Vous regardez la pierre. La foule s’est tue. Le terrain, lui, est toujours là.';
+  }
+  box.innerHTML='<p>'+text+'</p><button onclick="go(\'s2\')"><strong>Poursuivre</strong></button>';
+  box.classList.add('on');
+}
+
+function showC2(type){
+  const box=document.getElementById('c2');
+  const frog=document.getElementById('frog2');
+  const unstable=document.getElementById('unstable');
+  let text='';
+  if(type==='stop'){
+    text='Vous restez immobile. La pierre suivante demeure là. Vous ne savez pas encore si elle était réellement inaccessible.';
+  }else if(type==='defy'){
+    unstable.classList.add('unstable');
+    frog.classList.add('jump');
+    setTimeout(()=>frog.classList.remove('jump'),500);
+    text='Vous sautez par opposition. La pierre vacille.';
+  }else{
+    unstable.classList.add('unstable');
+    text='Vous regardez. Une pierre bouge réellement. Une autre tient.';
+  }
+  box.innerHTML='<p>'+text+'</p><button onclick="go(\'s3\')"><strong>Poursuivre</strong></button>';
+  box.classList.add('on');
+}
+
+function goSilent(){
+  document.querySelectorAll('.voice').forEach(v=>v.classList.add('fade'));
+  setTimeout(()=>{
+    go('s4');
+    setTimeout(()=>document.getElementById('q1').classList.add('show'),1800);
+    setTimeout(()=>document.getElementById('q2').classList.add('show'),3400);
+  },600);
+}
+
+function finish(action){
+  lastAction=action;
+  const trace=document.getElementById('trace');
+
+  const t1 = choice1==='approval'
+    ? 'À un moment, vous avez attendu que les voix reviennent.'
+    : choice1==='image'
+    ? 'À un moment, l’image donnée aux autres a accéléré votre saut.'
+    : 'À un moment, vous avez regardé avant de décider.';
+
+  const t2 = choice2==='stop'
+    ? 'À un moment, le désaccord a suspendu votre geste.'
+    : choice2==='defy'
+    ? 'À un moment, l’opposition a accéléré votre saut.'
+    : 'À un moment, vous avez vérifié ce que la voix permettait de voir.';
+
+  trace.innerHTML =
+    '<div>'+t1+'</div>'+
+    '<div>'+t2+'</div>'+
+    '<div>Dernier geste : <strong>'+action.toLowerCase()+'</strong>.</div>';
+
+  go('s5');
+}
+
+function restart(){
+  choice1=null;choice2=null;lastAction=null;
+  document.querySelectorAll('.consequence').forEach(c=>{c.classList.remove('on');c.innerHTML=''});
+  document.querySelectorAll('.voice').forEach(v=>v.classList.remove('fade'));
+  document.querySelectorAll('.stone').forEach(s=>s.classList.remove('unstable'));
+  document.getElementById('q1').classList.remove('show');
+  document.getElementById('q2').classList.remove('show');
+  const mc=document.getElementById('moreContent');
+  const mb=document.getElementById('moreBtn');
+  if(mc) mc.classList.remove('on');
+  if(mb) mb.setAttribute('aria-expanded','false');
+  go('intro');
+}
+
+function toggleMore(){
+  const box=document.getElementById('moreContent');
+  const btn=document.getElementById('moreBtn');
+  const open=box.classList.toggle('on');
+  btn.setAttribute('aria-expanded',open ? 'true' : 'false');
+}
+</script>
+</body>
+</html>
